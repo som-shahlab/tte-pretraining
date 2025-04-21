@@ -102,7 +102,7 @@ After pretraining is done we will perform linear probe (logistic regressin on bi
 ![Task Adaptation](tte_pretraining/docs/linear_probe.png)
 
 ```bash
-cd /share/pi/nigam/projects/zphuo/repos/tte-pretraining/tte_pretraining/training
+cd tte_pretraining/training
 ./3_inference_TTE_H100_ddp.sh
 ```
 
