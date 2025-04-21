@@ -127,3 +127,18 @@ Note:
 - We reduced the `vocab_size` to 512 and `num_tasks` to 200 to improve speed of getting results
 - The tutorial will prefit a bias term of the piecewise exponential model layer to avoid collapse without a good initial fit. This will take a few moments
 - There's no gradient update or backpropagation, as we are only demonstrating deriving the loss term
+
+## 🎓 Citation
+
+If you found this work useful, please consider citing it:
+
+```
+@article{huo2024time,
+      @article{huo2024time,
+      title={Time-to-Event Pretraining for 3D Medical Imaging},
+      author={Huo, Zepeng and Fries, Jason Alan and Lozano, Alejandro and Valanarasu, Jeya Maria Jose and Steinberg, Ethan and Blankemeier, Louis and Chaudhari, Akshay S and Langlotz, Curtis and Shah, Nigam H},
+      journal={arXiv preprint arXiv:2411.09361},
+      year={2024}
+      url={https://arxiv.org/abs/2411.09361}, 
+}
+```
