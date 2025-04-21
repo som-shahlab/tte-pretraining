@@ -70,7 +70,7 @@ For pretraining we used 3 model architectures (SWINUNETR/ResNet/DenseNet)
 
 You can should specify the pretrained tokenizer from above and the dataset path (the `parquet` file folder) and image data path (`.nii.gz` files folder)
 
-There are other hyperparameter training for the three architecture, you should refer to the [hyperparameter table](https://arxiv.org/pdf/2411.09361#page=20.10) for detailed reference when you input them into the bash script
+There are other hyperparameter training for the three architecture, you should refer to the [hyperparameter table](https://arxiv.org/pdf/2411.09361#page=21.10) for detailed reference when you input them into the bash script
 
 ```bash
 cd tte_pretraining/training/
