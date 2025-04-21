@@ -16,6 +16,7 @@ We have provided the code for:
 You should install the required packages first
 
 ```bash
+cd tte_pretraining
 pip install -r docs/requirements.txt
 conda install --file docs/environment.txt
 ```
