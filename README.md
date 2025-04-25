@@ -35,7 +35,7 @@ You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to down
 
 The tokenization process is to organize the EHR code into hierarchical form based on their ontology and then rank them based on entropy and other processing (e.g. normalizing given counts of patients with the code). Then eventually save the tokenizer
 
-![Data Curation Process](tte_pretraining/docs/data_curation.png)
+![Data Curation Process](assets/data_curation.png)
 
 The number of pretraining tasks we select is 8,192 and the vocabulary size (total unique codes from EHR) is 65,535. You will need to download ontology from Athena. 
 
@@ -67,7 +67,7 @@ For pretraining we used 3 model architectures (SWINUNETR/ResNet/DenseNet)
     - The script to conduct the operations are `tte_pretraining/training/src/i3dense.py`
     - And `tte_pretraining/training/src/i3res.py`
 
-![Pretraining overview](tte_pretraining/docs/pretrain.png)
+![Pretraining overview](assets/pretrain.png)
 
 You can should specify the pretrained tokenizer from above and the dataset path (the `parquet` file folder) and image data path (`.nii.gz` files folder)
 
@@ -99,7 +99,7 @@ cd tte_pretraining/training/
 
 After pretraining is done we will perform linear probe (logistic regressin on binary classification tasks, and CoX-PH head of DeepSurv for TTE tasks).
 
-![Task Adaptation](tte_pretraining/docs/linear_probe.png)
+![Task Adaptation](assets/linear_probe.png)
 
 ```bash
 cd tte_pretraining/training
