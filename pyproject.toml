@@ -3,11 +3,7 @@ name = "tte-pretraining"
 version = "0.1.0"
 requires-python = ">=3.10"
 description = "Time-to-Event pretraining package"
-dependencies = []
-
-[project.optional-dependencies]
-TTE_ENV = [
-    "absl-py==2.1.0",
+dependencies = ["absl-py==2.1.0",
     "accelerate==0.33.0",
     "aim==3.23.0",
     "aim-ui==3.23.0",
@@ -213,8 +209,10 @@ TTE_ENV = [
     "zstandard==0.21.0",
     "myst-nb",
     "sphinx-autoapi",
-    "sphinx-rtd-theme"
-]
+    "sphinx-rtd-theme"]
+
+[project.optional-dependencies]
+TTE_ENV = []
 
 [build-system]
 requires = ["pdm-backend"]
