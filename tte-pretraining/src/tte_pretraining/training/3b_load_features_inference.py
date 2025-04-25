@@ -5,6 +5,27 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 from datetime import datetime
 import os
+import argparse
+import pickle
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Linear probe evaluation script')
+    parser.add_argument('--data_dir', type=str, required=True,
+                      help='Directory containing feature files')
+    parser.add_argument('--model_save_path', type=str, required=True,
+                      help='Directory to save trained models')
+    parser.add_argument('--model_choice', type=str, default='densenet_600k_crop',
+                      help='Model architecture choice')
+    parser.add_argument('--epoch', type=int, default=-1,
+                      help='Epoch number for model checkpoint')
+    parser.add_argument('--month_date', type=str, default='',
+                      help='Month/date string for model naming')
+    parser.add_argument('--tune_linearprobe', action='store_true',
+                      help='Whether to tune hyperparameters')
+    parser.add_argument('--feature_prefix', type=str, default='',
+                      help='Prefix for feature files')
+    
+    return parser.parse_args()
 
 def run_analysis(title: str, y_train, y_train_proba, y_test=None, y_test_proba=None, label_col = 'finetune_label'):
     if y_test is None or y_test_proba is None:
@@ -153,22 +174,30 @@ def tune_hyperparameter_LR(linear_model, X_val, y_val):
 
 
 
-column_ls = ['12_month_PH', 'pe_positive_nlp','1_month_mortality' ,'6_month_mortality' ,'12_month_mortality' ,'1_month_readmission' ,'6_month_readmission', '12_month_readmission']
+def main():
+    args = parse_args()
+    
+    # Define feature paths
+    feature_prefix = f"{args.feature_prefix}_{args.epoch}epoch_{args.model_choice}" if args.feature_prefix else f"{args.epoch}epoch_{args.model_choice}"
+    X_train = pickle.load(open(os.path.join(args.data_dir, f'X_train_{feature_prefix}.pkl'), 'rb'))
+    y_train = pickle.load(open(os.path.join(args.data_dir, f'y_train_{feature_prefix}.pkl'), 'rb'))
+    X_val = pickle.load(open(os.path.join(args.data_dir, f'X_val_{feature_prefix}.pkl'), 'rb'))
+    y_val = pickle.load(open(os.path.join(args.data_dir, f'y_val_{feature_prefix}.pkl'), 'rb'))
+    
+    column_ls = ['12_month_PH', 'pe_positive_nlp','1_month_mortality' ,'6_month_mortality' ,
+                 '12_month_mortality' ,'1_month_readmission' ,'6_month_readmission', '12_month_readmission']
+    
+    metric_values = []
+    run, writer = None, None
+    
+    start_time = datetime.now()
+    print(f"Start time: {start_time}")
+    metric_values, run, writer, auroc_val, auroc_train_dict, auroc_val_dict = logistic_regression(
+        column_ls, X_train, y_train, X_val, y_val, 
+        args.model_save_path, args.model_choice, args.epoch, 
+        args.month_date, metric_values, run, writer, args.tune_linearprobe
+    )
+    print(f"Time taken: {datetime.now() - start_time}")
 
-import pickle
-X_train = pickle.load(open('/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/features_2/X_train_6epoch_densenet_600k_crop.pkl', 'rb'))
-y_train = pickle.load(open('/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/features_2/y_train_6epoch_densenet_600k_crop.pkl', 'rb'))
-X_val = pickle.load(open('/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/features_2/X_val_6epoch_densenet_600k_crop.pkl', 'rb'))
-y_val = pickle.load(open('/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/features_2/y_val_6epoch_densenet_600k_crop.pkl', 'rb'))
-model_save_path = '/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints'
-model_choice = 'densenet_600k_crop'
-epoch=-1
-month_date=''
-tune_linearprobe=False
-metric_values= []
-run, writer = None, None
-
-start_time = datetime.now()
-print(f"Start time: {start_time}")
-metric_values, run, writer, auroc_val, auroc_train_dict, auroc_val_dict = logistic_regression(column_ls, X_train, y_train, X_val, y_val, model_save_path, model_choice, epoch, month_date, metric_values, run, writer, tune_linearprobe)
-print(f"Time taken: {datetime.now() - start_time}")
+if __name__ == '__main__':
+    main()

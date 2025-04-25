@@ -16,10 +16,27 @@ We have provided the code for:
 You should install the required packages first
 
 ```bash
-cd tte_pretraining
-pip install -r docs/requirements.txt
-conda install --file docs/environment.txt
+conda create -n TTE_ENV python=3.10 -y
+conda activate TTE_ENV
+pip install -e .
 ```
+
+
+Additionally, for our data preprocessing pipeline we use **[FEMR  (Framework for Electronic Medical Records)](https://github.com/som-shahlab/femr)**, a Python package for building deep learning models with EHR data. 
+
+You must also have CUDA/cuDNN installed (we recommend CUDA 11.8 and cuDNN 8.7.0). 
+
+Note that this currently only works on Linux machines.
+
+```bash
+pip install --upgrade "jax[cuda11_pip]==0.4.8" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+git clone https://github.com/som-shahlab/femr.git
+cd femr
+pip install -e .
+git switch -c femrv2_pub --track origin/femrv2_pub
+```
+
+
 
 ## Dataset
 
@@ -44,6 +61,7 @@ Athena is an OHDSI service for downloading ontologies. Simply visit https://athe
 Note: the downloaded ontology can be too large (i.e. few hundred GB) so optionally you want to prune it to fit to our dataset to make running substantially faster:
 
 ```bash
+cd tte-pretraining/src/tte_pretraining/training
 python 1a_prune_ontology.py \
 --input-dataset "/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data/*parquet" \
 --input-ontology "/share/pi/nigam/projects/zphuo/data/PE/inspect/ontology.pkl" \
@@ -54,7 +72,6 @@ python 1a_prune_ontology.py \
 After that you can start training a tokenizer and save it:
 
 ```bash
-cd tte_pretraining/training/
 ./1a_tokenizer.sh
 ```
 
