@@ -6,6 +6,7 @@ We have provided the code for:
 - [Installation](#installation)
 - [Dataset](#dataset)
 - [Tokenization](#tokenization)
+- [Labeling](#labeling-for-tte-tasks)
 - [Pretraining with parallel GPUs](#pretraining)
 - [Evaluation with linear probe](#evaluation)
 - [Tutorial for deriving tte training loss](#tutorial)
@@ -73,6 +74,39 @@ After that you can start training a tokenizer and save it:
 
 ```bash
 ./1a_tokenizer.sh
+```
+
+## Labeling for TTE tasks
+We also provide code examples for deriving the TTE labels of downstream tasks, i.e. a format of a tuple (`time_to_event_of_interest (in sec), is_censored`). In the paper we labeled 5 such tasks: ATX (Atelectasis), CMG (Cardiomegaly), CONS (Consolidation) EDM (Edema), and PEFF (Pleural Effusion). However the users can specify their own labeling criteria to do TTE labeling. 
+
+<img src="assets/labeling.png" width="65%" alt="labeling overview">
+
+Note that our EHR data is under [OHDSI common data model](https://www.ohdsi.org/data-standardization/) so our codes are mainly under [SNOMED schema](https://www.snomed.org/). E.g. these are the codes that we used for labeling:
+
+| Task     | Code |
+|----------|----------|
+| Pulmonary Hypertension    | SNOMED/70995007  |
+| Pulmonary Embolism        | SNOMED/59282003  |
+| Atelectasis               | SNOMED/46621007   |
+| Cardiomegaly              | SNOMED/8186001   |
+| Consolidation             | SNOMED/95436008   |
+| Edema                     | SNOMED/267038008 |
+| Pleural Effusion          | SNOMED/60046008 |
+
+You can then proceed to start deriving the TTE labels
+
+```bash
+cd tte-pretraining/src/tte_pretraining/labeling
+labeling_functions='tte_mortality' # or 'tte_Pleural_Effusion' etc.
+
+python generate_tte_labels.py \
+--index_time_csv_path 'metadata_20250303.csv' \
+--index_time_column 'procedure_DATETIME' \
+--path_to_database 'femr_extract' \
+--path_to_output_dir 'output' \
+--labeling_function $labeling_function \
+--is_skip_featurize \
+--num_threads 12
 ```
 
 
