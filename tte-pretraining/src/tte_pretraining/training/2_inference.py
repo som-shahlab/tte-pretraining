@@ -46,9 +46,9 @@ nii_folder = '/local-scratch-nvme/nigam/PE/anon_nii_gz'
 import shutil
 import os
 
-# os.environ["HF_DATASETS_CACHE"] = '/share/pi/nigam/zphuo/cache_dir'
 
-TARGET_DIR = '/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash/tutorial_6_INSEPCT'
+
+TARGET_DIR = 'trash/tutorial_6_INSEPCT'
 
 from_pretrained = from_pretrained_tokenizer
 num_proc = 20
@@ -68,7 +68,7 @@ import femr.splits
 # We do this by calling our split functionality twice
 
 # dataset = datasets.Dataset.from_parquet('input/meds/data/*')
-parquet_folder = '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data_subset/*'
+parquet_folder = 'timelines_smallfiles_meds/data_subset/*'
 dataset = datasets.Dataset.from_parquet(parquet_folder)
 
 
@@ -96,7 +96,7 @@ import pickle
 # Note, we need to use a hierarchical tokenizer for MOTOR
 
 
-with open('/share/pi/nigam/projects/zphuo/repos/femr/tutorials/input/meds/ontology.pkl', 'rb') as f:
+with open('ontology.pkl', 'rb') as f:
     ontology = pickle.load(f)
 if not from_pretrained:
     tokenizer = femr.models.tokenizer.train_tokenizer(
@@ -158,7 +158,7 @@ if loadmodel_path:
     model.load_state_dict(state_dict)
 
 
-label_csv = '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/labels.csv'
+label_csv = 'labels.csv'
 
 
 label_csv = pd.read_csv(label_csv)

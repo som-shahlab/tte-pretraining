@@ -69,11 +69,7 @@ from sklearn.model_selection import GridSearchCV
 def load_pretrained_swinunetr(model, use_pretrained, pretrained_path):
     # use_pretrained = True
 
-    # if use_pretrained:
-    #     resource = "https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/ssl_pretrained_weights.pth"
-    #     dst = "/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/ssl_pretrained_weights.pth"
-    #     download_url(resource, dst)
-    #     pretrained_path = os.path.normpath(dst)
+
 
     # Load SwinUNETR backbone weights into SwinUNETR
     if use_pretrained is True:
@@ -431,9 +427,6 @@ def set_up_motor_task(TARGET_DIR, from_pretrained_tokenizer, month_date_hour, nu
     
 
 
-    # os.environ["HF_DATASETS_CACHE"] = '/share/pi/nigam/zphuo/cache_dir'
-
-    # TARGET_DIR = '/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash/tutorial_6_INSEPCT'
 
     from_pretrained = from_pretrained_tokenizer
     # num_proc = 20
@@ -461,11 +454,9 @@ def set_up_motor_task(TARGET_DIR, from_pretrained_tokenizer, month_date_hour, nu
 
     # dataset = datasets.Dataset.from_parquet('input/meds/data/*')
     if 'subset' in label_csv:
-        #parquet_folder = '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data_subset/*'
         parquet_folder = os.path.join(parquet_folder, 'data_subset', '*')
         
     else:
-        #parquet_folder = '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data/*'
         parquet_folder = os.path.join(parquet_folder, 'data', '*')
     dataset = datasets.Dataset.from_parquet(parquet_folder)
     if not test_subset:

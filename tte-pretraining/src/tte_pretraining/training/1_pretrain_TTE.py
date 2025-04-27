@@ -204,9 +204,7 @@ def train(
     
     # wandb.require("service")
     device = accelerator.device
-    
-    if model_choice == "resnet_louis":
-        loadmodel_path = '/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/i3_resnet_clinical_longformer_best_clip_04-02-2024_23-21-36_99epoch_99.pt'
+
 
     if ddp:
         rank = int(torch.distributed.get_rank())
@@ -690,7 +688,6 @@ def train(
         
         label_df_tte = None
         
-        label_csv = '/share/pi/nigam/data/RSNAPE/train_with_nii.csv'
         label_df = pd.read_csv(label_csv, dtype=data_types)
 
 
@@ -812,7 +809,6 @@ def train(
     elif dataformat == 'jpg_chexpert':
         label_df_tte = None
         
-        label_csv = '/share/pi/nigam/data/CheXpert-v1.0t/CheXpert-v1.0-small/train_with_INSPECT_labels.csv'
         label_df = pd.read_csv(label_csv, dtype=data_types)
         
         if prop_train:
@@ -834,7 +830,6 @@ def train(
                 + str(row["Path"])
             )
         
-        label_csv_test = '/share/pi/nigam/data/CheXpert-v1.0t/CheXpert-v1.0-small/valid_with_INSPECT_labels.csv'
         label_df_test = pd.read_csv(label_csv_test, dtype=data_types)
     
         for idx, row in tqdm(label_df_test.iterrows(), total = len(label_df_test)):
@@ -1462,7 +1457,7 @@ def train(
         print(f"Building model imagenet_stage1_stage2_mtl_seg_resnet_100 with {num_classes} classes")
         
         model = resnet152(n_input_channels=1)
-        checkpoint = torch.load("/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/i3_resnet_clinical_longformer_best_clip_04-02-2024_23-21-36_epoch_99.pt", map_location=f'cuda:{torch.cuda.current_device()}') 
+        checkpoint = torch.load(pretrained_path_resnet, map_location=f'cuda:{torch.cuda.current_device()}')
         checkpoint_updated = {}
         for key, value in checkpoint.items():
             if "encode_image.i3_resnet." in key:
@@ -1546,9 +1541,7 @@ def train(
                 num_classes = len(label_column)
         
         model = ResNetV2_Mars().to(device)
-        checkpoint = torch.load(
-        "/share/pi/nigam/projects/zphuo/data/PE/inspect/image_modality/ckpt/resnetv2_ct.ckpt"
-        , map_location=f'cuda:{torch.cuda.current_device()}') 
+        checkpoint = torch.load(loadmodel_path, map_location=f'cuda:{torch.cuda.current_device()}') 
         ckpt = {k.replace("model.", ""): v for k, v in checkpoint["state_dict"].items()}
         # model.load_state_dict(ckpt, strict=False)
         model = load_different_model(model, ckpt, ddp)
@@ -2774,19 +2767,19 @@ if __name__ == "__main__":
         "--label_csv",
         type=str,
         help="path to the csv file containing the labels",
-        default="/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon_subset.csv",
+        default="label.csv",
     )
     parser.add_argument(
         "--CT_8192labels",
         type=str,
         help="path to the pickle file containing the same visit 8192 labels",
-        default="/share/pi/nigam/projects/zphuo/repos/inspect_private/ehr/(delete)/CT_8192labels.pkl",
+        default="CT_8192labels.pkl",
     )
     parser.add_argument(
         "--model_save_path",
         type=str,
         help="path to the csv file containing the labels",
-        default="/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints",
+        default="model_checkpoints",
     )
     parser.add_argument(
         "--loadmodel_path",
@@ -2881,7 +2874,7 @@ if __name__ == "__main__":
         "--nii_folder",
         type=str,
         help="nii folder path",
-        default="/share/pi/nigam/data/inspect/anon_nii_gz",
+        default="anon_nii_gz",
     )
     parser.add_argument(
         "--inference",
@@ -2905,19 +2898,19 @@ if __name__ == "__main__":
         "--parquet_folder",
         type=str,
         help="nii folder path",
-        default="/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds",
+        default="timelines_smallfiles_meds",
     )
     parser.add_argument(
         "--TARGET_DIR",
         type=str,
         help="nii folder path",
-        default='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash',
+        default='training/trash',
     )
     parser.add_argument(
         "--ontology_path",
         type=str,
         help="path to the ontology file",
-        default="/share/pi/nigam/projects/zphuo/data/PE/inspect/inspect_ontology.pkl",
+        default="inspect_ontology.pkl",
     )
     parser.add_argument(
         "--num_proc",
