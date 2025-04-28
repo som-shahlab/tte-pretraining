@@ -64,9 +64,9 @@ Note: the downloaded ontology can be too large (i.e. few hundred GB) so optional
 ```bash
 cd tte-pretraining/src/tte_pretraining/training
 python 1a_prune_ontology.py \
---input-dataset "/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data/*parquet" \
---input-ontology "/share/pi/nigam/projects/zphuo/data/PE/inspect/ontology.pkl" \
---output-ontology "/share/pi/nigam/projects/zphuo/data/PE/inspect/inspect_ontology.pkl" \
+--input-dataset "inspect/timelines_smallfiles_meds/data/*parquet" \
+--input-ontology "inspect/ontology.pkl" \
+--output-ontology "inspect/inspect_ontology.pkl" \
 --num-processors 32 
 ```
 
