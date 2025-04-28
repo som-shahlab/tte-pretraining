@@ -1,5 +1,5 @@
 # tte-pretraining
-Code for the paper "Time-to-event pretraining for 3D medical imaging". You can **[read the paper here](https://arxiv.org/abs/2411.09361)**
+Code for the paper "**Time-to-event pretraining for 3D medical imaging**" (ICLR 2025). You can **[read the paper here](https://arxiv.org/abs/2411.09361)**
 
 We have provided the code for:
 
@@ -64,7 +64,7 @@ Note: the downloaded ontology can be too large (i.e. few hundred GB) so optional
 ```bash
 cd tte-pretraining/src/tte_pretraining/training
 python 1a_prune_ontology.py \
---input-dataset "data/*parquet" \
+--input-dataset "inspect/timelines_smallfiles_meds/data/*parquet" \
 --input-ontology "inspect/ontology.pkl" \
 --output-ontology "inspect/inspect_ontology.pkl" \
 --num-processors 32 
