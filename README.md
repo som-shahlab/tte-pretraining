@@ -1,5 +1,5 @@
 # tte-pretraining
-Code for the paper "Time-to-event pretraining for 3D medical imaging". You can **[read the paper here](https://arxiv.org/abs/2411.09361)**
+Code for the paper "Time-to-event pretraining for 3D medical imaging" (ICLR 2025). You can **[read the paper here](https://arxiv.org/abs/2411.09361)**
 
 We have provided the code for:
 
