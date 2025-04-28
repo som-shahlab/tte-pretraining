@@ -125,8 +125,8 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process CSV file and root directory.")
-    parser.add_argument("--csv_file", type=str, default='/share/pi/nigam/data/RSNAPE/simplified_labels/train.csv')
-    parser.add_argument("--root_dir", type=str, default='/share/pi/nigam/data/RSNAPE/nifti_crop/')
+    parser.add_argument("--csv_file", type=str, default='//data/RSNAPE/simplified_labels/train.csv')
+    parser.add_argument("--root_dir", type=str, default='//data/RSNAPE/nifti_crop/')
 
     args = parser.parse_args()
     main(args)

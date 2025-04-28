@@ -14,5 +14,3 @@ python 'generate_tte_labels.py' \
 --num_threads 12
 done
 
-
-# --path_to_output_dir '/share/pi/nigam/projects/zphuo/data/PE/inspect/labels_and_features_fixed_censored/' \

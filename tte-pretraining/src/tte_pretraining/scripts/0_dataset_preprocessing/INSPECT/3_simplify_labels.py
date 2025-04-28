@@ -5,9 +5,9 @@ import os
 def main(args):
     #rsna_loader =  RSNAPePreprocessing(dataset_path=args.dataset_path)
     #rsna_loader.convert_studies_to_nifti(split=args.split,save_to=args.output_path,limits=args.limits)
-    rsna_loader =  RSNAPePreprocessing(dataset_path="/share/pi/nigam/data/RSNAPE/")
+    rsna_loader =  RSNAPePreprocessing(dataset_path="/data/RSNAPE/")
     
-    rsna_loader.simplfy_labels(split=args.split,save_to="/share/pi/nigam/data/RSNAPE/simplified_labels",limits=args.limits)
+    rsna_loader.simplfy_labels(split=args.split,save_to="/data/RSNAPE/simplified_labels",limits=args.limits)
     
 
 

@@ -12,18 +12,18 @@ load_dotenv()
 # study = "4833c9b6a5d0"
 # series = "57e3e3c5f910"
 # split = "train"
-# dicom_path = f"/local-scratch/nigam/datasets/RSNA_PE/{split}/{study}/{series}"
+# dicom_path = f"/datasets/RSNA_PE/{split}/{study}/{series}"
 # output_path = dicom_path.replace(split, "rendered")
 
 # INSPECT
 dicom_path = (
-    "/local-scratch/nigam/datasets/PE/inspect/anon_dicoms_tar/2222-02-15T10:07:00"
+    "/datasets/PE/inspect/anon_dicoms_tar/2222-02-15T10:07:00"
 )
 output_path = dicom_path
 
 
 seg = totalsegmentator(
-    # input="/share/pi/nigam/data/RSNAPE/test/ff62ec60c99b/0e5fa221590c",
+    # input="//data/RSNAPE/test/ff62ec60c99b/0e5fa221590c",
     input=dicom_path,
     output=output_path,
     # roi_subset=["lung"],
@@ -33,7 +33,7 @@ seg = totalsegmentator(
 )
 print(seg.shape)
 # seg = totalsegmentator(
-#     input="/local-scratch/nigam/datasets/RSNAPE/RSNAPE/test/ff62ec60c99b/0e5fa221590c",
+#     input="/datasets/RSNAPE/RSNAPE/test/ff62ec60c99b/0e5fa221590c",
 #     output="0e5fa221590c",
 #     preview=True,
 #     task="lung_vessels",

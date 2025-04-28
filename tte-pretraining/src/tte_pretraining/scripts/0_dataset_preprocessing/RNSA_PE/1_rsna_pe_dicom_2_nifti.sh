@@ -18,7 +18,7 @@
 
 
 # Execute python
-python 1_rsna_pe_dicom_2_nifti.py --dataset_path /share/pi/nigam/data/RSNAPE/ --output_path /share/pi/nigam/data/RSNAPE/nifti --split train
+python 1_rsna_pe_dicom_2_nifti.py --dataset_path /data/RSNAPE/ --output_path /data/RSNAPE/nifti --split train
 
 
 

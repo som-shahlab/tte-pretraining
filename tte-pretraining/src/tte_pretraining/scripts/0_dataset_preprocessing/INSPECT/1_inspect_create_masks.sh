@@ -17,8 +17,7 @@
 #SBATCH --exclude=secure-gpu-1,secure-gpu-2,secure-gpu-3
 
 # Execute python
-#python 1_inspect_create_masks.py --dataset_path /share/pi/nigam/data/inspect/anon_nii_gz --output_path /share/pi/nigam/data/inspect/TS_crop 
-python 1_inspect_create_masks.py  --dataset_path /share/pi/nigam/data/inspect/anon_nii_gz --output_path /share/pi/nigam/data/inspect/TS_crop 
+python 1_inspect_create_masks.py  --dataset_path /data/inspect/anon_nii_gz --output_path data/inspect/TS_crop 
 
 
 

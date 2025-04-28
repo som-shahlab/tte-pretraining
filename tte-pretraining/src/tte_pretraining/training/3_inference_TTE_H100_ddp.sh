@@ -3,14 +3,14 @@ CUDA_VISIBLE_DEVICES=0,1,2,3
 
 
 model_choice='unet'
-nii_folder='/share/pi/nigam/data/inspect/anon_nii_gz' 
-model_save_path='/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints'
+nii_folder='inspect/anon_nii_gz' 
+model_save_path='model_checkpoints'
 
 
-loadmodel_path='/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/best_metric_model_0epoch_unet_50k.pth'
+loadmodel_path='model_checkpoints/best_metric_model_0epoch_unet_50k.pth'
 
 
-TARGET_DIR='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash'
+TARGET_DIR='training/trash'
 label_column=('12_month_PH' 'pe_positive_nlp' '1_month_mortality' '6_month_mortality' '12_month_mortality' '1_month_readmission' '6_month_readmission' '12_month_readmission')
 survival_tasks=('mortality' 'readmission' 'PH' 'Atelectasis' 'Cardiomegaly' 'Consolidation' 'Edema' 'Pleural_Effusion') 
 
@@ -28,7 +28,7 @@ python \
 --finetune_label "12_month_PH" \
 --label_column "${label_column[@]}" \
 --val_interval 1 \
---label_csv '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon'$subset'.csv' \
+--label_csv 'labels_20250303.csv' \
 --max_epochs 20 \
 --vocab_size 65536 \
 --num_tasks  8192 \

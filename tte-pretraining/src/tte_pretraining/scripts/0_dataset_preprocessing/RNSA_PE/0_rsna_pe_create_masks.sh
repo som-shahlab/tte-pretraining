@@ -18,7 +18,7 @@
 mkdir -p logs
 
 # Execute python
-python 0_rsna_pe_create_masks.py --dataset_path /share/pi/nigam/data/RSNAPE/ --output_path /share/pi/nigam/data/RSNAPE/masks --split test --limits 550 600
+python 0_rsna_pe_create_masks.py --dataset_path /data/RSNAPE/ --output_path /data/RSNAPE/masks --split test --limits 550 600
 
 
 

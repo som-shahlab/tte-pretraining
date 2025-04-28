@@ -7,9 +7,9 @@ from pathlib import Path
 
 """
 python 1a_prune_ontology.py \
---input-dataset "/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/data/*" \
---input-ontology "/share/pi/nigam/projects/zphuo/data/PE/inspect/ontology.pkl" \
---output-ontology "/share/pi/nigam/projects/zphuo/data/PE/inspect/inspect_ontology.pkl" \
+--input-dataset "timelines_smallfiles_meds/data/*" \
+--input-ontology "ontology.pkl" \
+--output-ontology "inspect_ontology.pkl" \
 --num-processors 32 
 """
 

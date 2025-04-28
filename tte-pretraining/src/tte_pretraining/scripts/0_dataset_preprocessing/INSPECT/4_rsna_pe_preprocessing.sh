@@ -15,8 +15,8 @@
 mkdir -p logs
 
 # Execute python
-python 1_rsna_pe_dicom_2_nifti.py --dataset_path /share/pi/nigam/data/RSNAPE/ --split train
-#python 1_rsna_pe_dicom_2_nifti.py --dataset_path /share/pi/nigam/data/RSNAPE/ --split test
+python 1_rsna_pe_dicom_2_nifti.py --dataset_path /data/RSNAPE/ --split train
+#python 1_rsna_pe_dicom_2_nifti.py --dataset_path /data/RSNAPE/ --split test
 
 
 

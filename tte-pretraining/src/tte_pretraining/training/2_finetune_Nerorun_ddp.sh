@@ -3,11 +3,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 
 
 model_choice='densenet'
-nii_folder='/local-scratch-nvme/nigam/PE/anon_nii_gz/anon_nii_gz' 
-model_save_path='/local-scratch/nigam/datasets/PE/model_checkpoints' 
-# loadmodel_path='/local-scratch/nigam/datasets/PE/inspect/model_checkpoints/best_metric_model_34epoch_densenet_tte_0326.pth' 
-# parquet_folder="/local-scratch/nigam/datasets/PE/inspect/timelines_smallfiles_meds"
-TARGET_DIR='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash'
+nii_folder='PE/anon_nii_gz/anon_nii_gz' 
+model_save_path='model_checkpoints' 
+# loadmodel_path='inspect/model_checkpoints/best_metric_model_34epoch_densenet_tte_0326.pth' 
+# parquet_folder="inspect/timelines_smallfiles_meds"
+TARGET_DIR='training/trash'
 
 finetune_labels=('12_month_PH' '1_month_mortality' '6_month_mortality' '12_month_mortality') # 'pe_positive_nlp'  '1_month_readmission' '6_month_readmission' '12_month_readmission' 
 
@@ -24,7 +24,7 @@ do
         --finetune_label $finetune_label \
         --label_column "${label_column[@]}" \
         --val_interval 1 \
-        --label_csv '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon'$subset'.csv' \
+        --label_csv 'labels_20250303.csv' \
         --max_epochs 3 \
         --vocab_size 65536 \
         --num_tasks  8192 \

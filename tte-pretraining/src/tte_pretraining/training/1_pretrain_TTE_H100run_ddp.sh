@@ -3,11 +3,11 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 
 
 model_choice='resnet_tte'
-nii_folder='/local-scratch/nigam/datasets/PE/inspect/anon_nii_gz/anon_nii_gz' 
-model_save_path='/local-scratch/nigam/datasets/PE/model_checkpoints'  
-loadmodel_path='/local-scratch/nigam/datasets/PE/model_checkpoints/best_metric_model_2epoch_resnet_tte_600k_0716.pth'
+nii_folder='inspect/anon_nii_gz/anon_nii_gz' 
+model_save_path='model_checkpoints'  
+loadmodel_path='model_checkpoints/best_metric_model_2epoch_resnet_tte_600k_0716.pth'
 
-TARGET_DIR='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash'
+TARGET_DIR='training/trash'
 label_column=('12_month_PH' 'pe_positive_nlp' '1_month_mortality' '6_month_mortality' '12_month_mortality' '1_month_readmission'  '6_month_readmission' '12_month_readmission')
 
 subset=''
@@ -29,7 +29,7 @@ python3  1_pretrain_TTE.py \
 --model_choice $model_choice \
 --label_column "${label_column[@]}" \
 --val_interval 1 \
---label_csv '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon'$subset'.csv' \
+--label_csv 'labels_20250303.csv' \
 --max_epochs 20 \
 --vocab_size 65536 \
 --num_tasks  8192 \

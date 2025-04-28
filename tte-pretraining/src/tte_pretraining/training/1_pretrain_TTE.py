@@ -536,9 +536,7 @@ def train(
                 print('cache_dir---------', cache_dir)                 
                  
                 # v100 issue, save to here if dir exisits
-                cache_dir_v = '/local-scratch-nvme/nigam/PE/model_checkpoints/cache_dir'
                 if os.path.isdir(cache_dir_v):
-                    cache_dir = '/local-scratch/nigam/datasets/PE/model_checkpoints/cache_dir'
                     print('cache_dir_v---------', cache_dir_v)
                  
                 train_ds = PersistentDataset(
@@ -763,12 +761,12 @@ def train(
                 cache_dir=os.path.join(model_save_path, 'cache_dir')
                 
             # save to here if dir exisits
-            cache_dir_v = '/local-scratch-nvme/nigam/PE/model_checkpoints/cache_dir'
+
             if os.path.isdir(cache_dir_v):
-                cache_dir = '/local-scratch/nigam/datasets/PE/inspect/model_checkpoints/cache_dir/'
+                cache_dir = '/cache_dir/'
                 
             # GPU partition a100 cache_dir
-            cache_dir_a = '/local-scratch/nigam/users/zphuo'
+            cache_dir_a = '/cache_dir/'
             if os.path.isdir(cache_dir_a):
                 if loadmodel_path:
                     if 'unet_50k' in loadmodel_path:
@@ -893,12 +891,12 @@ def train(
                 cache_dir=os.path.join(model_save_path, 'cache_dir')
                 
             # save to here if dir exisits
-            cache_dir_v = '/local-scratch-nvme/nigam/PE/model_checkpoints/cache_dir'
+            cache_dir_v = 'model_checkpoints/cache_dir'
             if os.path.isdir(cache_dir_v):
-                cache_dir = '/local-scratch/nigam/datasets/PE/inspect/model_checkpoints/cache_dir/'
+                cache_dir = 'cache_dir/'
                 
             # GPU partition a100 cache_dir
-            cache_dir_a = '/local-scratch/nigam/users/zphuo'
+            cache_dir_a = 'cache_dir'
             if os.path.isdir(cache_dir_a):
                 if loadmodel_path:
                     if 'unet_50k' in loadmodel_path:
@@ -938,7 +936,7 @@ def train(
                 
     elif False:
     # dataformat == "dicom":
-        tar_folder = "/local-scratch/nigam/datasets/PE/inspect/anon_dicoms_tar"
+        tar_folder = "anon_dicoms_tar"
 
         label_df = pd.read_csv(label_csv)
         label_column = "pe_positive_nlp"
@@ -2982,19 +2980,19 @@ if __name__ == "__main__":
         "--pretrained_path_swinUNETR",
         type=str,
         help="path to the SwinUNETR pretrained weights",
-        default="/local-scratch/nigam/users/zphuo/model_weights/ssl_pretrained_weights.pth",
+        default="ssl_pretrained_weights.pth",
     )
     parser.add_argument(
         "--pretrained_path_densenet",
         type=str,
         help="path to the densenet pretrained weights",
-        default="/local-scratch/nigam/users/zphuo/model_weights/i3densenet.pth",
+        default="i3densenet.pth",
     )
     parser.add_argument(
         "--pretrained_path_resnet",
         type=str,
         help="path to the densenet pretrained weights",
-        default="/local-scratch/nigam/users/zphuo/model_weights/i3resnet.pth",
+        default="i3resnet.pth",
     )
     parser.add_argument(
         "--ddp",

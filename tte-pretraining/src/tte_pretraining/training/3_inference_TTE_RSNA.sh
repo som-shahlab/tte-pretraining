@@ -2,15 +2,15 @@
 CUDA_VISIBLE_DEVICES=0
 
 model_choice='unet'
-nii_folder='/share/pi/nigam/data/RSNAPE/nifti/train' # '/local-scratch/nigam/datasets/PE/inspect/anon_nii_gz/anon_nii_gz'  # '/share/pi/nigam/data/inspect/crop_lung' 
-model_save_path='/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints' # '/local-scratch/nigam/datasets/PE/model_checkpoints' 
+nii_folder='RSNAPE/nifti/train' # 'anon_nii_gz/anon_nii_gz'  # 'inspect/crop_lung' 
+model_save_path='model_checkpoints' # 'model_checkpoints' 
 
 
-loadmodel_path='/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/best_metric_model_4epoch_unet_50k.pth'
-#'/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/best_metric_model_0epoch_unet_50k_SV_0911.pth'
-#'/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints/best_metric_model_2epoch_resnet_600k.pth' 
+loadmodel_path='model_checkpoints/best_metric_model_4epoch_unet_50k.pth'
+#'model_checkpoints/best_metric_model_0epoch_unet_50k_SV_0911.pth'
+#'model_checkpoints/best_metric_model_2epoch_resnet_600k.pth' 
 
-TARGET_DIR='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash'
+TARGET_DIR='training/trash'
 label_column=('negative_exam_for_pe' 'rv_lv_ratio_gte_1' 'chronic_pe' 'central_pe' 'leftsided_pe' 'acute_and_chronic_pe' 'rv_lv_ratio_lt_1' 'indeterminate' 'rightsided_pe')
 survival_tasks=() 
 
@@ -26,7 +26,7 @@ python \
 --finetune_label "12_month_PH" \
 --label_column "${label_column[@]}" \
 --val_interval 1 \
---label_csv '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon'$subset'.csv' \
+--label_csv 'labels_20250303.csv' \
 --max_epochs 20 \
 --vocab_size 65536 \
 --num_tasks  8192 \

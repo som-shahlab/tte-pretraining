@@ -29,7 +29,7 @@ load_dotenv()
 
 import sys
 
-sys.path.append("/share/pi/nigam/alejandro/Repositories/TotalSegmentatorV2/totalsegmentator")
+sys.path.append("/alejandro/Repositories/TotalSegmentatorV2/totalsegmentator")
 
 from python_api import totalsegmentator
 #from totalsegmentator.python_api import totalsegmentator

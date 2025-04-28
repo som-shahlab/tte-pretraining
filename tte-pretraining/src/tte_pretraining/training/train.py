@@ -69,7 +69,7 @@ print_config()
 
 # Set data directory
 
-root_dir = "/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI"
+root_dir = "monai_MRI"
 print(root_dir)
 
 time_used = datetime.now() - START_TIME
@@ -266,7 +266,7 @@ def train(
 
     elif False:
     # dataformat == "dicom":
-        tar_folder = "/local-scratch/nigam/datasets/PE/inspect/anon_dicoms_tar"
+        tar_folder = "anon_dicoms_tar"
 
         label_df = pd.read_csv(label_csv)
         label_column = "pe_positive_nlp"
@@ -341,7 +341,7 @@ def train(
             state_dict = torch.load(loadmodel_path)
             model.load_state_dict(state_dict)
         else:
-            pretrained_path = "/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/ssl_pretrained_weights.pth"
+            pretrained_path = "ssl_pretrained_weights.pth"
             model = load_pretrained_swinunetr(
                 model, use_pretrained=True, pretrained_path=pretrained_path
             )
@@ -378,7 +378,7 @@ def train(
             state_dict = torch.load(loadmodel_path)
             model.load_state_dict(state_dict)
         else:
-            pretrained_path = "/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/ssl_pretrained_weights.pth"
+            pretrained_path = "ssl_pretrained_weights.pth"
             # model = load_pretrained_swinunetr(
             #     model, use_pretrained=True, pretrained_path=pretrained_path
             # )
@@ -518,13 +518,13 @@ if __name__ == "__main__":
         "--label_csv",
         type=str,
         help="path to the csv file containing the labels",
-        default="/share/pi/nigam/projects/zphuo/data/omop_extract_PHI/som-nero-phi-nigam-starr.frazier/cohort_0.2.0_master_file_anon.csv",
+        default="labels_20250303.csv",
     )
     parser.add_argument(
         "--model_save_path",
         type=str,
         help="path to the csv file containing the labels",
-        default="/share/pi/nigam/projects/zphuo/data/PE/Jose_monai_MRI/model_checkpoints",
+        default="model_checkpoints",
     )
     parser.add_argument(
         "--loadmodel_path",
@@ -584,7 +584,7 @@ if __name__ == "__main__":
         "--nii_folder",
         type=str,
         help="nii folder path",
-        default="/share/pi/nigam/data/inspect/anon_nii_gz",
+        default="anon_nii_gz",
     )
     parser.add_argument(
         "--use_cachedataset",

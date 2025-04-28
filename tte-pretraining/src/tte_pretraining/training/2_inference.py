@@ -35,9 +35,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 pin_memory = torch.cuda.is_available()
 
 model_choice = 'densenet_tte'
-loadmodel_path = f'/local-scratch-nvme/nigam/PE/tte_models/best_metric_model_3epoch_{model_choice}.pth'
+loadmodel_path = f'tte_models/best_metric_model_3epoch_{model_choice}.pth'
 label_column = '12_month_PH'
-nii_folder = '/local-scratch-nvme/nigam/PE/anon_nii_gz'
+nii_folder = 'anon_nii_gz'
 
 
 ###### set up MOTOR task ########

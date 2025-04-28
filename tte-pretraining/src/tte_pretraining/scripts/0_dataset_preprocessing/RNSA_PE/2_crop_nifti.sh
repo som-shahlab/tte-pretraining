@@ -18,7 +18,7 @@
 
 
 # Execute python
-python 2_crop_nifti.py --dataset_path /share/pi/nigam/data/RSNAPE  --split test --nifti_path /share/pi/nigam/data/RSNAPE/nifti --masks_path /share/pi/nigam/data/RSNAPE/masks --output_path /share/pi/nigam/data/RSNAPE/nifti_crop   
-python 2_crop_nifti.py --dataset_path /share/pi/nigam/data/RSNAPE  --split train --nifti_path /share/pi/nigam/data/RSNAPE/nifti --masks_path /share/pi/nigam/data/RSNAPE/masks --output_path /share/pi/nigam/data/RSNAPE/nifti_crop   
+python 2_crop_nifti.py --dataset_path /data/RSNAPE  --split test --nifti_path /data/RSNAPE/nifti --masks_path /data/RSNAPE/masks --output_path /data/RSNAPE/nifti_crop   
+python 2_crop_nifti.py --dataset_path /data/RSNAPE  --split train --nifti_path /data/RSNAPE/nifti --masks_path /data/RSNAPE/masks --output_path /data/RSNAPE/nifti_crop   
 
 

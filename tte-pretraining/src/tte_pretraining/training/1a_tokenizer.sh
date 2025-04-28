@@ -3,12 +3,12 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 
 
 model_choice='densenet_tte'
-nii_folder='/share/pi/nigam/data/inspect/anon_nii_gz'  
-model_save_path='/share/pi/nigam/projects/zphuo/data/PE/PIXEL/model_checkpoints/'    
+nii_folder='data/inspect/anon_nii_gz'  
+model_save_path='projects/zphuo/data/PE/PIXEL/model_checkpoints/'    
 TARGET_DIR='training/trash'
-label_csv='/share/pi/nigam/projects/zphuo/data/PE/inspect/note$ Final_labels_20250303.csv'
+label_csv='projects/zphuo/data/PE/inspect/note$ Final_labels_20250303.csv'
 subset=''
-ontology_path='/share/pi/nigam/projects/zphuo/data/PE/inspect/inspect_ontology.pkl'
+ontology_path='projects/zphuo/data/PE/inspect/inspect_ontology.pkl'
 
 python 1_pretrain_TTE.py \
     --model_choice $model_choice \

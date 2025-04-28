@@ -3,10 +3,10 @@ CUDA_VISIBLE_DEVICES=0,1
 
 
 model_choice='resnet'
-nii_folder='/share/pi/nigam/data/inspect/anon_nii_gz' 
-model_save_path='/share/pi/nigam/projects/zphuo/data/PE/PIXEL/model_checkpoints'  
+nii_folder='data/inspect/anon_nii_gz' 
+model_save_path='projects/zphuo/data/PE/PIXEL/model_checkpoints'  
 
-TARGET_DIR='/share/pi/nigam/projects/zphuo/repos/PE_3D_multimodal/training/trash'
+TARGET_DIR='projects/zphuo/repos/PE_3D_multimodal/training/trash'
 
 # finetune_labels=('12_month_readmission' 'pe_positive_nlp' '1_month_readmission' '6_month_readmission') # 
 # finetune_labels=('12_month_PH' 'pe_positive_nlp' '1_month_mortality' '6_month_mortality' '12_month_mortality' '1_month_readmission'  '6_month_readmission' '12_month_readmission') # 
@@ -32,7 +32,7 @@ do
         --finetune_label $finetune_label \
         --label_column "${label_column[@]}" \
         --val_interval 1 \
-        --label_csv '/share/pi/nigam/projects/zphuo/data/PE/inspect/timelines_smallfiles_meds/cohort_0.2.0_master_file_anon'$subset'.csv' \
+        --label_csv 'labels_20250303.csv' \
         --max_epochs 15 \
         --vocab_size 65536 \
         --num_tasks  8192 \

@@ -1059,11 +1059,11 @@ def get_split_df(image_paths, label_df, X, nii_folder, task_set):
     image_paths = np.array(image_paths)
     patient_datetime_ls = []
     for image_path in image_paths.squeeze():
-        if '/local-scratch-nvme/nigam/PE/anon_nii_gz/anon_nii_gz' in image_path:
-            image_path = image_path.replace('/local-scratch-nvme/nigam/PE/anon_nii_gz/anon_nii_gz', '/local-scratch/nigam/datasets/PE/inspect/anon_nii_gz/anon_nii_gz')
+        if 'anon_nii_gz/anon_nii_gz' in image_path:
+            image_path = image_path.replace('anon_nii_gz/anon_nii_gz')
         
         # patient_datetime = image_path.replace(nii_folder, '').replace('.nii.gz', '').replace('/', '')
-        patient_datetime = image_path.replace(nii_folder, '').replace('/local-scratch/nigam/datasets/PE/inspect/anon_nii_gz/anon_nii_gz', '').replace('.nii.gz', '').replace('/', '')
+        patient_datetime = image_path.replace(nii_folder, '').replace('anon_nii_gz/anon_nii_gz', '').replace('.nii.gz', '').replace('/', '')
         patient_id, date, time = patient_datetime.split('_', 2)
         patient_datetime = patient_id+'_'+date+'T'+time.replace('_', ':')
         patient_datetime_ls.append(patient_datetime)
