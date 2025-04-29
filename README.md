@@ -3,13 +3,13 @@ Code for the paper "**Time-to-event pretraining for 3D medical imaging**" (ICLR 
 
 We have provided the code for:
 
-- [Installation](#installation)
-- [Dataset/Model download](#dataset)
-- [Tokenization](#tokenization)
-- [Labeling](#labeling-for-tte-tasks)
-- [Pretraining with parallel GPUs](#pretraining)
-- [Evaluation with linear probe](#evaluation)
-- [Tutorial for deriving tte training loss](#tutorial)
+- 💿 [Installation](#installation)
+- 📥 [Dataset/Model download](#dataset)
+- ✍ [Tokenization](#tokenization)
+- 🔖 [Labeling](#labeling-for-tte-tasks)
+- 🎛 [Pretraining with parallel GPUs](#pretraining)
+- ⚖️ [Evaluation with linear probe](#evaluation)
+- 📚 [Tutorial for deriving tte training loss](#tutorial)
 
 
 ## Installation
