@@ -4,7 +4,7 @@ Code for the paper "**Time-to-event pretraining for 3D medical imaging**" (ICLR 
 We have provided the code for:
 
 - [Installation](#installation)
-- [Dataset](#dataset)
+- [Dataset/Model download](#dataset)
 - [Tokenization](#tokenization)
 - [Labeling](#labeling-for-tte-tasks)
 - [Pretraining with parallel GPUs](#pretraining)
@@ -47,6 +47,7 @@ You should direct to [here](https://aimi.stanford.edu/datasets/inspect-Multimoda
 You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to download EHR modality data in MEDS format (filename `meds_omop_inspect.tar.gz`)
 - The path to this folder be be used as `parquet_folder` in below commands
 
+You should direct to [here](https://huggingface.co/collections/StanfordShahLab/image-models-6810740bb92a97ce61406bac) to download the model weights from Huggingface
 
 
 ## Tokenization
