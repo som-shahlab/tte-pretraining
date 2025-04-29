@@ -41,13 +41,13 @@ git switch -c femrv2_pub --track origin/femrv2_pub
 
 ## Dataset
 
-You should direct to [here](https://aimi.stanford.edu/datasets/inspect-Multimodal-Dataset-for-Pulmonary-Embolism-Diagnosis-and-Prognosis) to download the image dataset in NIfTI format (i.e. file extensions as `.nii.gz`)
+You should direct to [here](https://aimi.stanford.edu/datasets/inspect-Multimodal-Dataset-for-Pulmonary-Embolism-Diagnosis-and-Prognosis) to download the **image modality data** in NIfTI format (i.e. file extensions as `.nii.gz`)
 - The path to this folder will be used as `nii_folder` in below commands
 
-You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to download EHR modality data in MEDS format (filename `meds_omop_inspect.tar.gz`)
+You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to download **EHR modality data** in [MEDS format](https://github.com/Medical-Event-Data-Standard) (filename `meds_omop_inspect.tar.gz`)
 - The path to this folder be be used as `parquet_folder` in below commands
 
-You should direct to [here](https://huggingface.co/collections/StanfordShahLab/image-models-6810740bb92a97ce61406bac) to download the model weights from Huggingface
+You should direct to [here](https://huggingface.co/collections/StanfordShahLab/image-models-6810740bb92a97ce61406bac) to download the **model weights** from Huggingface
 
 
 ## Tokenization
