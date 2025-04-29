@@ -116,8 +116,8 @@ python generate_tte_labels.py \
 For pretraining we used 3 model architectures (SWINUNETR/ResNet/DenseNet)
 - SWINUNETR's pretrianing weights is from training on 50k public available CT/MRI dataset (weights can be download from [here to load in torch](https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/model_swinvit.pt))
 - ResNet and DenseNet are initialized from inflating 2D weights of pretrained data of ImageNet. The inflation process can be followed by [this instructions](https://github.com/hassony2/inflated_convnets_pytorch)
-    - The script to conduct the operations are `tte_pretraining/training/src/i3dense.py`
-    - And `tte_pretraining/training/src/i3res.py`
+    - The script to conduct the operations are `tte-pretraining/src/tte_pretraining/training/src/i3dense.py`
+    - And `tte-pretraining/src/tte_pretraining/training/src/i3res.py`
 
 ![Pretraining overview](assets/pretrain.png)
 
