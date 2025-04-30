@@ -10,7 +10,7 @@ We have provided the code for:
 - 🎛 [Pretraining with parallel GPUs](#pretraining)
 - ⚖️ [Evaluation with linear probe](#evaluation)
 - 📚 [Tutorial for deriving tte training loss](#tutorial)
-- 📚 [Unit Test](#unittest)
+- 📚 [Unit Test](#unit-test)
 
 
 ## Installation
