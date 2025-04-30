@@ -10,6 +10,7 @@ We have provided the code for:
 - 🎛 [Pretraining with parallel GPUs](#pretraining)
 - ⚖️ [Evaluation with linear probe](#evaluation)
 - 📚 [Tutorial for deriving tte training loss](#tutorial)
+- 📚 [Unit Test](#unittest)
 
 
 ## Installation
@@ -179,6 +180,19 @@ Note:
 - We reduced the `vocab_size` to 512 and `num_tasks` to 200 to improve speed of getting results
 - The tutorial will prefit a bias term of the piecewise exponential model layer to avoid collapse without a good initial fit. This will take a few moments
 - There's no gradient update or backpropagation, as we are only demonstrating deriving the loss term
+
+## Unit Test
+
+We also provide unit test for our model loading, deriving featuring, etc. as preliminary guardrails
+
+Please refer to folder at `tte-pretraining/tests`
+
+Note: 
+- we mainly provide guardrails for out-of-the-box inference and adaptation
+- It loads a model weight (you need to download from above Huggingface repo https://huggingface.co/StanfordShahLab)
+- Then user needs to supply labels so that the embeddings can eventually be mapped to it
+- It trains a logistic regression given frozen model, and eval
+- It tests if the features/labels/embedding match as expected, e.g. the TTE pretrained DenseNet is trained with 1024 dim as feature for downstream linear probe
 
 ## 🎓 Citation
 
