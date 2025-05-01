@@ -9,7 +9,7 @@ We have provided the code for:
 - 🔖 [Labeling](#labeling-for-tte-tasks)
 - 🎛 [Pretraining with parallel GPUs](#pretraining)
 - ⚖️ [Evaluation with linear probe](#evaluation)
-- 📚 [Tutorial for deriving tte training loss](#tutorial)
+- 📚 [Tutorial for deriving TTE training loss](#tutorial)
 - 🔬 [Unit Test](#unit-test)
 
 
