@@ -127,7 +127,7 @@ You can should specify the pretrained tokenizer from above and the dataset path 
 There are other hyperparameter training for the three architecture, you should refer to the [hyperparameter table](https://arxiv.org/pdf/2411.09361#page=21.10) for detailed reference when you input them into the bash script
 
 ```bash
-cd tte_pretraining/training/
+cd ttte-pretraining/src/tte_pretraining/training/
 ./1_pretrain_TTE_H100run_ddp.sh
 ```
 
@@ -143,7 +143,7 @@ Each of the architecture would require different training clocktime (or GPU time
 Note: optionally you can perform per task fine-tuning but this process is generally expensive given you need to train to completion for any downstream, i.e. `num_model * num_tasks` for full paremeter update and this tends not work well (per our [fine-tuning table results](https://arxiv.org/pdf/2411.09361#page=23.10)) but we also provide you script to to do fine-tuning as example
 
 ```bash
-cd tte_pretraining/training/
+cd tte-pretraining/src/tte_pretraining/training/
 ./2_finetune_A100run_ddp.sh
 ```
 
@@ -155,14 +155,14 @@ After pretraining is done we will perform linear probe (logistic regressin on bi
 ![Task Adaptation](assets/linear_probe.png)
 
 ```bash
-cd tte_pretraining/training
+cd tte-pretraining/src/tte_pretraining/training
 ./3_inference_TTE_H100_ddp.sh
 ```
 
 We also test on the [RSPECT data](https://www.kaggle.com/c/rsna-str-pulmonary-embolism-detection/data) for the out-of-distribution diagnosis task only evaluation
 
 ```bash
-cd tte_pretraining/training
+cd tte-pretraining/src/tte_pretraining/training
 ./3_inference_TTE_RSNA.sh
 ```
 
