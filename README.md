@@ -150,7 +150,7 @@ cd tte-pretraining/src/tte_pretraining/training/
 
 ## Evaluation
 
-After pretraining is done we will perform linear probe (logistic regressin on binary classification tasks, and CoX-PH head of DeepSurv for TTE tasks).
+After pretraining is done we will perform linear probe (logistic regressin on binary classification tasks, and CoX-PH head of [DeepSurv](https://github.com/jaredleekatzman/DeepSurv) for TTE tasks).
 
 ![Task Adaptation](assets/linear_probe.png)
 
