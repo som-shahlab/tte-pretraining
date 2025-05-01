@@ -79,7 +79,7 @@ After that you can start training a tokenizer and save it:
 ```
 
 ## Labeling for TTE tasks
-We also provide code examples for deriving the TTE labels of downstream tasks, i.e. a format of a tuple (`time_to_event_of_interest (in sec), is_censored`). In the paper we labeled 5 such tasks: ATX (Atelectasis), CMG (Cardiomegaly), CONS (Consolidation) EDM (Edema), and PEFF (Pleural Effusion). However the users can specify their own labeling criteria to do TTE labeling. 
+We also provide code examples for deriving the TTE labels of downstream tasks, i.e. a format of a tuple (`time_to_event_of_interest (in sec), is_censored`). In the paper we labeled 5 such tasks: ATX (Atelectasis), CMG (Cardiomegaly), CONS (Consolidation), EDM (Edema), and PEFF (Pleural Effusion). However the users can specify their own labeling criteria to do TTE labeling. 
 
 <img src="assets/labeling.png" width="65%" alt="labeling overview">
 
