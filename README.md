@@ -3,13 +3,14 @@ Code for the paper "**Time-to-event pretraining for 3D medical imaging**" (ICLR 
 
 We have provided the code for:
 
-- [Installation](#installation)
-- [Dataset](#dataset)
-- [Tokenization](#tokenization)
-- [Labeling](#labeling-for-tte-tasks)
-- [Pretraining with parallel GPUs](#pretraining)
-- [Evaluation with linear probe](#evaluation)
-- [Tutorial for deriving tte training loss](#tutorial)
+- 💿 [Installation](#installation)
+- 📥 [Dataset/Model download](#dataset)
+- ✍ [Tokenization](#tokenization)
+- 🔖 [Labeling](#labeling-for-tte-tasks)
+- 🎛 [Pretraining with parallel GPUs](#pretraining)
+- ⚖️ [Evaluation with linear probe](#evaluation)
+- 📚 [Tutorial for deriving TTE training loss](#tutorial)
+- 🔬 [Unit Test](#unit-test)
 
 
 ## Installation
@@ -41,12 +42,13 @@ git switch -c femrv2_pub --track origin/femrv2_pub
 
 ## Dataset
 
-You should direct to [here](https://aimi.stanford.edu/datasets/inspect-Multimodal-Dataset-for-Pulmonary-Embolism-Diagnosis-and-Prognosis) to download the image dataset in NIfTI format (i.e. file extensions as `.nii.gz`)
+You should direct to [here](https://aimi.stanford.edu/datasets/inspect-Multimodal-Dataset-for-Pulmonary-Embolism-Diagnosis-and-Prognosis) to download the **image modality data** in NIfTI format (i.e. file extensions as `.nii.gz`)
 - The path to this folder will be used as `nii_folder` in below commands
 
-You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to download EHR modality data in MEDS format (filename `meds_omop_inspect.tar.gz`)
+You should direct to [here](https://redivis.com/datasets/dzc6-9jyt6gapt) to download **EHR modality data** in [MEDS format](https://github.com/Medical-Event-Data-Standard) (filename `meds_omop_inspect.tar.gz`)
 - The path to this folder be be used as `parquet_folder` in below commands
 
+You should direct to [here](https://huggingface.co/collections/StanfordShahLab/image-models-6810740bb92a97ce61406bac) to download the **model weights** from Huggingface
 
 
 ## Tokenization
@@ -77,7 +79,7 @@ After that you can start training a tokenizer and save it:
 ```
 
 ## Labeling for TTE tasks
-We also provide code examples for deriving the TTE labels of downstream tasks, i.e. a format of a tuple (`time_to_event_of_interest (in sec), is_censored`). In the paper we labeled 5 such tasks: ATX (Atelectasis), CMG (Cardiomegaly), CONS (Consolidation) EDM (Edema), and PEFF (Pleural Effusion). However the users can specify their own labeling criteria to do TTE labeling. 
+We also provide code examples for deriving the TTE labels of downstream tasks, i.e. a format of a tuple (`time_to_event_of_interest (in sec), is_censored`). In the paper we labeled 5 such tasks: ATX (Atelectasis), CMG (Cardiomegaly), CONS (Consolidation), EDM (Edema), and PEFF (Pleural Effusion). However the users can specify their own labeling criteria to do TTE labeling. 
 
 <img src="assets/labeling.png" width="65%" alt="labeling overview">
 
@@ -113,10 +115,10 @@ python generate_tte_labels.py \
 ## Pretraining
 
 For pretraining we used 3 model architectures (SWINUNETR/ResNet/DenseNet)
-- where SWINUNETR's pretrianing weights is from training on 50k public available CT/MRI dataset (weights can be download from [here to load in torch](https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/model_swinvit.pt))
+- SWINUNETR's pretrianing weights is from training on 50k public available CT/MRI dataset (weights can be download from [here to load in torch](https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/model_swinvit.pt))
 - ResNet and DenseNet are initialized from inflating 2D weights of pretrained data of ImageNet. The inflation process can be followed by [this instructions](https://github.com/hassony2/inflated_convnets_pytorch)
-    - The script to conduct the operations are `tte_pretraining/training/src/i3dense.py`
-    - And `tte_pretraining/training/src/i3res.py`
+    - The script to conduct the operations are `tte-pretraining/src/tte_pretraining/training/src/i3dense.py`
+    - And `tte-pretraining/src/tte_pretraining/training/src/i3res.py`
 
 ![Pretraining overview](assets/pretrain.png)
 
@@ -125,7 +127,7 @@ You can should specify the pretrained tokenizer from above and the dataset path 
 There are other hyperparameter training for the three architecture, you should refer to the [hyperparameter table](https://arxiv.org/pdf/2411.09361#page=21.10) for detailed reference when you input them into the bash script
 
 ```bash
-cd tte_pretraining/training/
+cd ttte-pretraining/src/tte_pretraining/training/
 ./1_pretrain_TTE_H100run_ddp.sh
 ```
 
@@ -141,26 +143,26 @@ Each of the architecture would require different training clocktime (or GPU time
 Note: optionally you can perform per task fine-tuning but this process is generally expensive given you need to train to completion for any downstream, i.e. `num_model * num_tasks` for full paremeter update and this tends not work well (per our [fine-tuning table results](https://arxiv.org/pdf/2411.09361#page=23.10)) but we also provide you script to to do fine-tuning as example
 
 ```bash
-cd tte_pretraining/training/
+cd tte-pretraining/src/tte_pretraining/training/
 ./2_finetune_A100run_ddp.sh
 ```
 
 
 ## Evaluation
 
-After pretraining is done we will perform linear probe (logistic regressin on binary classification tasks, and CoX-PH head of DeepSurv for TTE tasks).
+After pretraining is done we will perform linear probe (logistic regressin on binary classification tasks, and CoX-PH head of [DeepSurv](https://github.com/jaredleekatzman/DeepSurv) for TTE tasks).
 
 ![Task Adaptation](assets/linear_probe.png)
 
 ```bash
-cd tte_pretraining/training
+cd tte-pretraining/src/tte_pretraining/training
 ./3_inference_TTE_H100_ddp.sh
 ```
 
 We also test on the [RSPECT data](https://www.kaggle.com/c/rsna-str-pulmonary-embolism-detection/data) for the out-of-distribution diagnosis task only evaluation
 
 ```bash
-cd tte_pretraining/training
+cd tte-pretraining/src/tte_pretraining/training
 ./3_inference_TTE_RSNA.sh
 ```
 
@@ -178,6 +180,19 @@ Note:
 - We reduced the `vocab_size` to 512 and `num_tasks` to 200 to improve speed of getting results
 - The tutorial will prefit a bias term of the piecewise exponential model layer to avoid collapse without a good initial fit. This will take a few moments
 - There's no gradient update or backpropagation, as we are only demonstrating deriving the loss term
+
+## Unit Test
+
+We also provide unit test for our model loading, deriving featuring, etc. as preliminary guardrails
+
+Please refer to folder at `tte-pretraining/tests`
+
+Note: 
+- we mainly provide guardrails for out-of-the-box inference and adaptation
+- It loads a model weight (you need to download from above Huggingface repo https://huggingface.co/StanfordShahLab)
+- Then user needs to supply labels so that the embeddings can eventually be mapped to it
+- It trains a logistic regression given frozen model, and eval
+- It tests if the features/labels/embedding match as expected, e.g. the TTE pretrained DenseNet is trained with 1024 dim as feature for downstream linear probe
 
 ## 🎓 Citation
 

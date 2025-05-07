@@ -938,7 +938,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--path_to_PHI_database",
         type=str,
-        default="som-nero-phi-nigam-starr.shahlab_omop_cdm5_subset_2023_05_06_extract_no_observation_v2",
+        default="omop_cdm5_subset_2023_05_06_extract_no_observation_v2",
         help="Path to femr PHI database for all",
     )
     parser.add_argument(
