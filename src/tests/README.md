@@ -1,4 +1,4 @@
-# 3D pretrained image model for training/inference with examples
+# Unit Test for 3D pretrained image model for training/inference
 
 ### out-of-the-box inference and adaptation 
 
