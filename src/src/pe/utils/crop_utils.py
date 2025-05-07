@@ -1,10 +1,10 @@
+import numpy as np
 
-import numpy as np 
 
 def get_bbox_from_mask(mask, outside_value=-900, addon=0):
     if type(addon) is int:
         addon = [addon] * 3
-    if (mask > outside_value).sum() == 0: 
+    if (mask > outside_value).sum() == 0:
         print("WARNING: Could not crop because no foreground detected")
         minzidx, maxzidx = 0, mask.shape[0]
         minxidx, maxxidx = 0, mask.shape[1]
@@ -37,4 +37,6 @@ def crop_to_bbox(image, bbox):
           Indices of bbox must be in voxel coordinates  (not in world space)
     """
     assert len(image.shape) == 3, "only supports 3d images"
-    return image[bbox[0][0]:bbox[0][1], bbox[1][0]:bbox[1][1], bbox[2][0]:bbox[2][1]]
+    return image[
+        bbox[0][0] : bbox[0][1], bbox[1][0] : bbox[1][1], bbox[2][0] : bbox[2][1]
+    ]

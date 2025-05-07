@@ -24,7 +24,7 @@ from monai.transforms import (
 from networks import SwinClassifier, DenseNet121
 
 pin_memory = torch.cuda.is_available()
-device    = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 print_config()
@@ -59,10 +59,8 @@ images = [
 ]
 
 
-
 # 2 binary labels for gender classification: man or woman
 labels = np.array([0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0])
-
 
 
 # Represent labels in one-hot format for binary classifier training,
@@ -70,22 +68,32 @@ labels = np.array([0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0])
 labels = torch.nn.functional.one_hot(torch.as_tensor(labels)).float()
 
 # Define transforms
-train_transforms = Compose([ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 200)), RandRotate90()])
-val_transforms   = Compose([ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 200))])
+train_transforms = Compose(
+    [ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 200)), RandRotate90()]
+)
+val_transforms = Compose(
+    [ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 200))]
+)
 
 # Define nifti dataset, data loader
-check_ds     = ImageDataset(image_files=images, labels=labels, transform=train_transforms)
+check_ds = ImageDataset(image_files=images, labels=labels, transform=train_transforms)
 check_loader = DataLoader(check_ds, batch_size=3, num_workers=2, pin_memory=pin_memory)
 
 im, label = monai.utils.misc.first(check_loader)
 print(type(im), im.shape, label, label.shape)
 
 # create a training data loader
-train_ds     = ImageDataset(image_files=images[:10], labels=labels[:10], transform=train_transforms)
-train_loader = DataLoader(train_ds, batch_size=1, shuffle=True, num_workers=2, pin_memory=pin_memory)
+train_ds = ImageDataset(
+    image_files=images[:10], labels=labels[:10], transform=train_transforms
+)
+train_loader = DataLoader(
+    train_ds, batch_size=1, shuffle=True, num_workers=2, pin_memory=pin_memory
+)
 
 # create a validation data loader
-val_ds     = ImageDataset(image_files=images[-10:], labels=labels[-10:], transform=val_transforms)
+val_ds = ImageDataset(
+    image_files=images[-10:], labels=labels[-10:], transform=val_transforms
+)
 val_loader = DataLoader(val_ds, batch_size=1, num_workers=2, pin_memory=pin_memory)
 
 # Create DenseNet121, CrossEntropyLoss and Adam optimizer
@@ -119,7 +127,7 @@ for epoch in range(max_epochs):
         optimizer.zero_grad()
         # import pdb;pdb.set_trace()
         outputs = model(inputs)
-        loss    = loss_function(outputs, labels)
+        loss = loss_function(outputs, labels)
         loss.backward()
         optimizer.step()
         epoch_loss += loss.item()
@@ -150,12 +158,16 @@ for epoch in range(max_epochs):
         if metric > best_metric:
             best_metric = metric
             best_metric_epoch = epoch + 1
-            torch.save(model.state_dict(), "best_metric_model_classification3d_array.pth")
+            torch.save(
+                model.state_dict(), "best_metric_model_classification3d_array.pth"
+            )
             print("saved new best metric model")
 
         print(f"Current epoch: {epoch+1} current accuracy: {metric:.4f} ")
         print(f"Best accuracy: {best_metric:.4f} at epoch {best_metric_epoch}")
         writer.add_scalar("val_accuracy", metric, epoch + 1)
 
-print(f"Training completed, best_metric: {best_metric:.4f} at epoch: {best_metric_epoch}")
+print(
+    f"Training completed, best_metric: {best_metric:.4f} at epoch: {best_metric_epoch}"
+)
 writer.close()

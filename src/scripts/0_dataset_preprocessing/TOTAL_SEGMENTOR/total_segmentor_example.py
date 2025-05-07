@@ -16,9 +16,7 @@ load_dotenv()
 # output_path = dicom_path.replace(split, "rendered")
 
 # INSPECT
-dicom_path = (
-    "/datasets/PE/inspect/anon_dicoms_tar/2222-02-15T10:07:00"
-)
+dicom_path = "/datasets/PE/inspect/anon_dicoms_tar/2222-02-15T10:07:00"
 output_path = dicom_path
 
 

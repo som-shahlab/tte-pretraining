@@ -5,7 +5,13 @@ import pickle
 import json
 import numpy as np
 from loguru import logger
-from utils import LABELING_FUNCTIONS, load_data, save_data, return_df_jittered_time, save
+from utils import (
+    LABELING_FUNCTIONS,
+    load_data,
+    save_data,
+    return_df_jittered_time,
+    save,
+)
 import pandas as pd
 from typing import Any, Callable, List, Optional, Set, Tuple
 import collections
@@ -23,7 +29,20 @@ from femr.labelers.omop import (
 import multiprocessing
 from femr.extension import datasets as extension_datasets
 from dataclasses import dataclass
-from typing import Any, DefaultDict, Dict, List, Literal, Optional, Sequence, Set, Tuple, Union, cast, Mapping
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+    cast,
+    Mapping,
+)
 import femr.labelers
 from femr import Patient
 from femr.labelers.omop_inpatient_admissions import InpatientReadmissionLabeler
@@ -71,11 +90,14 @@ I27.2
 """.split()
 ]
 
+
 def identity(x: Any) -> Any:
     return x
 
+
 # from utils import SurvivalValue, Label
 from femr.labelers.core import SurvivalValue, Label
+
 
 @dataclass
 class Label:
@@ -85,14 +107,17 @@ class Label:
     time: datetime.datetime
     value: Union[bool, int, float, str, SurvivalValue]
 
+
 def get_death_concepts() -> List[str]:
     return [
         # "Death Type/OMOP generated",
         "Condition Type/OMOP4822053",
     ]
 
+
 def get_inpatient_admission_concepts() -> List[str]:
     return ["Visit/IP"]
+
 
 class Event:
     """An event within a patient record."""
@@ -155,6 +180,7 @@ class Event:
         for a, b in d.items():
             self.__dict__[a] = b
 
+
 @dataclass
 class Patient:
     """A patient."""
@@ -162,20 +188,26 @@ class Patient:
     patient_id: int
     events: Sequence[Event]
 
+
 def get_inpatient_admission_codes(
     ontology: extension_datasets.Ontology,
 ) -> Set[str]:
     # Don't get children here b/c it adds noise (i.e. "Medicare Specialty/AO")
     return set(get_inpatient_admission_concepts())
 
-def get_inpatient_admission_events(patient: Patient, ontology: extension_datasets.Ontology) -> List[Event]:
+
+def get_inpatient_admission_events(
+    patient: Patient, ontology: extension_datasets.Ontology
+) -> List[Event]:
     admission_codes: Set[str] = get_inpatient_admission_codes(ontology)
     events: List[Event] = []
     for e in patient.events:
         if e.code in admission_codes and e.omop_table == "visit_occurrence":
             # Error checking
             if e.start is None or e.end is None:
-                raise RuntimeError(f"Event {e} cannot have `None` as its `start` or `end` attribute.")
+                raise RuntimeError(
+                    f"Event {e} cannot have `None` as its `start` or `end` attribute."
+                )
             elif e.start > e.end:
                 raise RuntimeError(f"Event {e} cannot have `start` after `end`.")
             # Drop single point in time events
@@ -183,6 +215,7 @@ def get_inpatient_admission_events(patient: Patient, ontology: extension_dataset
                 continue
             events.append(e)
     return events
+
 
 def get_inpatient_admission_discharge_times(
     patient: Patient, ontology: extension_datasets.Ontology
@@ -198,9 +231,16 @@ def get_inpatient_admission_discharge_times(
         times.append((e.start, e.end))
     return times
 
+
 class CodeLabeler(femr.labelers.TimeHorizonEventLabeler):
     def __init__(
-        self, index_time_df, index_time_column, time_horizon, codes, ontology, offset=datetime.timedelta(days=0)
+        self,
+        index_time_df,
+        index_time_column,
+        time_horizon,
+        codes,
+        ontology,
+        offset=datetime.timedelta(days=0),
     ):
         self.codes = codes
         self.time_horizon = time_horizon
@@ -208,7 +248,9 @@ class CodeLabeler(femr.labelers.TimeHorizonEventLabeler):
         self.prediction_times_map = collections.defaultdict(set)
 
         for _, row in index_time_df.iterrows():
-            prediction_time: datetime.datetime = datetime.datetime.strptime(row[index_time_column], "%Y-%m-%d %H:%M:%S")
+            prediction_time: datetime.datetime = datetime.datetime.strptime(
+                row[index_time_column], "%Y-%m-%d %H:%M:%S"
+            )
             self.prediction_times_map[row["PersonID"]].add(prediction_time - offset)
 
         super().__init__()
@@ -230,6 +272,7 @@ class CodeLabeler(femr.labelers.TimeHorizonEventLabeler):
                 outcome_times.add(event.start)
 
         return sorted(list(outcome_times))
+
 
 class Labeler(ABC):
     """An interface for labeling functions.
@@ -259,7 +302,9 @@ class Labeler(ABC):
         """
         pass
 
-    def get_patient_start_end_times(self, patient: Patient) -> Tuple[datetime.datetime, datetime.datetime]:
+    def get_patient_start_end_times(
+        self, patient: Patient
+    ) -> Tuple[datetime.datetime, datetime.datetime]:
         """Return the (start, end) of the patient timeline.
 
         Returns:
@@ -299,7 +344,9 @@ class Labeler(ABC):
         if (patients is None and path_to_patient_database is None) or (
             patients is not None and path_to_patient_database is not None
         ):
-            raise ValueError("Must specify exactly one of `patient_database` or `path_to_patient_database`")
+            raise ValueError(
+                "Must specify exactly one of `patient_database` or `path_to_patient_database`"
+            )
 
         if path_to_patient_database:
             # Load patientdatabase if specified
@@ -336,7 +383,11 @@ class Labeler(ABC):
             self.labeler.ontology: extension_datasets.Ontology = None  # type: ignore
 
         # Multiprocessing
-        tasks = [(self, patient_map, path_to_patient_database, pid_part) for pid_part in pid_parts if len(pid_part) > 0]
+        tasks = [
+            (self, patient_map, path_to_patient_database, pid_part)
+            for pid_part in pid_parts
+            if len(pid_part) > 0
+        ]
 
         if num_threads != 1:
             ctx = multiprocessing.get_context("forkserver")
@@ -350,12 +401,14 @@ class Labeler(ABC):
                 results.append(_apply_labeling_function(task))
 
         # Join results and return
-        patients_to_labels: Dict[int, List[Label]] = dict(collections.ChainMap(*results))
+        patients_to_labels: Dict[int, List[Label]] = dict(
+            collections.ChainMap(*results)
+        )
         return LabeledPatients(patients_to_labels, self.get_labeler_type())
 
 
 def _apply_labeling_function(
-    args: Tuple[Labeler, Optional[Mapping[int, Patient]], Optional[str], List[int]]
+    args: Tuple[Labeler, Optional[Mapping[int, Patient]], Optional[str], List[int]],
 ) -> Dict[int, List[Label]]:
     """Apply a labeling function to the set of patients included in `patient_ids`.
     Gets called as a parallelized subprocess of the .apply() method of `Labeler`."""
@@ -365,7 +418,9 @@ def _apply_labeling_function(
     patient_ids: List[int] = args[3]
 
     if path_to_patient_database is not None:
-        patients = cast(Mapping[int, Patient], PatientDatabase(path_to_patient_database))
+        patients = cast(
+            Mapping[int, Patient], PatientDatabase(path_to_patient_database)
+        )
 
     # Hacky workaround for Ontology not being picklable
     if (
@@ -390,6 +445,7 @@ def _apply_labeling_function(
 
     return patients_to_labels
 
+
 class TimeHorizonEventLabeler_TTE(Labeler):
 
     def __init__(
@@ -408,13 +464,15 @@ class TimeHorizonEventLabeler_TTE(Labeler):
     def get_outcome_times_from_csv(self, patient: Patient) -> List[datetime.datetime]:
         pass
 
-    def get_prediction_times_from_csv(self, patient: Patient) -> List[datetime.datetime]:
+    def get_prediction_times_from_csv(
+        self, patient: Patient
+    ) -> List[datetime.datetime]:
         """Return prediction times based on a given CSV."""
         times: List[datetime.datetime] = []
         last_time = None
         # df = pd.read_csv(self.index_time_csv_path)
         df = self.index_time_df
-        time_column = 'ordering_date'
+        time_column = "ordering_date"
         # df[time_column] = pd.to_datetime(df[time_column])
         df_patient = df[df["person_id"] == patient.patient_id]
         for _, row in df_patient.iterrows():
@@ -435,7 +493,9 @@ class TimeHorizonEventLabeler_TTE(Labeler):
     def get_prediction_times(self, patient: Patient) -> List[datetime.datetime]:
         pass
 
-    def get_patient_start_end_times(self, patient: Patient) -> Tuple[datetime.datetime, datetime.datetime]:
+    def get_patient_start_end_times(
+        self, patient: Patient
+    ) -> Tuple[datetime.datetime, datetime.datetime]:
         """Return the datetimes that we consider the (start, end) of this patient."""
         return (patient.events[0].start, patient.events[-1].start)
 
@@ -464,18 +524,26 @@ class TimeHorizonEventLabeler_TTE(Labeler):
 
         __, end_time = self.get_patient_start_end_times(patient)
         if self.index_time_df is not None:
-            prediction_times: List[datetime.datetime] = self.get_prediction_times_from_csv(patient)
+            prediction_times: List[datetime.datetime] = (
+                self.get_prediction_times_from_csv(patient)
+            )
         else:
-            prediction_times: List[datetime.datetime] = self.get_prediction_times(patient)
+            prediction_times: List[datetime.datetime] = self.get_prediction_times(
+                patient
+            )
         if self.outcome_time_df is not None:
-            outcome_times: List[datetime.datetime] = self.get_outcome_times_from_csv(patient)
+            outcome_times: List[datetime.datetime] = self.get_outcome_times_from_csv(
+                patient
+            )
         else:
             outcome_times: List[datetime.datetime] = self.get_outcome_times(patient)
         time_horizon: TimeHorizon = self.get_time_horizon()
 
         # Get (start, end) of time horizon. If end is None, then it's infinite (set timedelta to max)
         time_horizon_start: datetime.timedelta = time_horizon.start
-        time_horizon_end: Optional[datetime.timedelta] = time_horizon.end  # `None` if infinite time horizon
+        time_horizon_end: Optional[datetime.timedelta] = (
+            time_horizon.end
+        )  # `None` if infinite time horizon
 
         # For each prediction time, check if there is an outcome which occurs within the (start, end)
         # of the time horizon
@@ -484,18 +552,26 @@ class TimeHorizonEventLabeler_TTE(Labeler):
         last_time = None
         for time in prediction_times:
             if last_time is not None:
-                assert time > last_time, f"Must be ascending prediction times, instead got {last_time} <= {time}"
+                assert (
+                    time > last_time
+                ), f"Must be ascending prediction times, instead got {last_time} <= {time}"
 
             last_time = time
             # try:
-            while curr_outcome_idx < len(outcome_times) and outcome_times[curr_outcome_idx] < time + time_horizon_start:
+            while (
+                curr_outcome_idx < len(outcome_times)
+                and outcome_times[curr_outcome_idx] < time + time_horizon_start
+            ):
                 # `curr_outcome_idx` is the idx in `outcome_times` that corresponds to the first
                 # outcome EQUAL or AFTER the time horizon for this prediction time starts (if one exists)
                 curr_outcome_idx += 1
             # except:
             #     pass
 
-            if curr_outcome_idx < len(outcome_times) and outcome_times[curr_outcome_idx] == time:
+            if (
+                curr_outcome_idx < len(outcome_times)
+                and outcome_times[curr_outcome_idx] == time
+            ):
                 if not self.allow_same_time_labels():
                     continue
                 warnings.warn(
@@ -525,24 +601,55 @@ class TimeHorizonEventLabeler_TTE(Labeler):
             # TRUE if patient is censored (i.e. timeline ends BEFORE this time horizon ends,
             # so we don't know if the outcome happened after the patient timeline ends)
             # If infinite time horizon labeler, then assume no censoring
-            is_censored: bool = end_time < time + time_horizon_end if (time_horizon_end is not None) else False
+            is_censored: bool = (
+                end_time < time + time_horizon_end
+                if (time_horizon_end is not None)
+                else False
+            )
 
             if is_outcome_occurs_in_time_horizon:
-                results.append(Label(time=time, value=SurvivalValue(is_censored=False, time_to_event=outcome_times[curr_outcome_idx] - time)))
+                results.append(
+                    Label(
+                        time=time,
+                        value=SurvivalValue(
+                            is_censored=False,
+                            time_to_event=outcome_times[curr_outcome_idx] - time,
+                        ),
+                    )
+                )
             elif not is_censored:
                 # Not censored + no outcome => FALSE
                 if end_time - time < datetime.timedelta(seconds=0):
                     end_time = patient.events[-2].start
-                assert end_time >= time, f"End time {end_time} must be >= prediction time {time}"
-                results.append(Label(time=time, value=SurvivalValue(is_censored=True, time_to_event=end_time - time)))
+                assert (
+                    end_time >= time
+                ), f"End time {end_time} must be >= prediction time {time}"
+                results.append(
+                    Label(
+                        time=time,
+                        value=SurvivalValue(
+                            is_censored=True, time_to_event=end_time - time
+                        ),
+                    )
+                )
             elif is_censored:
                 # Censored => None
                 if end_time - time < datetime.timedelta(seconds=0):
                     end_time = patient.events[-2].start
-                assert end_time >= time, f"End time {end_time} must be >= prediction time {time}"
-                results.append(Label(time=time, value=SurvivalValue(is_censored=True, time_to_event=end_time - time)))
+                assert (
+                    end_time >= time
+                ), f"End time {end_time} must be >= prediction time {time}"
+                results.append(
+                    Label(
+                        time=time,
+                        value=SurvivalValue(
+                            is_censored=True, time_to_event=end_time - time
+                        ),
+                    )
+                )
 
         return results
+
 
 class CodeLabeler_TTE(TimeHorizonEventLabeler_TTE):
     """Apply a label based on 1+ outcome_codes' occurrence(s) over a fixed time horizon."""
@@ -580,14 +687,17 @@ class CodeLabeler_TTE(TimeHorizonEventLabeler_TTE):
 
     def get_prediction_times(self, patient: Patient) -> List[datetime.datetime]:
         """Return each event's start time (possibly modified by prediction_time_adjustment_func)
-        as the time to make a prediction. Default to all events whose `code` is in `self.prediction_codes`."""
+        as the time to make a prediction. Default to all events whose `code` is in `self.prediction_codes`.
+        """
         times: List[datetime.datetime] = []
         last_time = None
         for e in patient.events:
-            prediction_time: datetime.datetime = self.prediction_time_adjustment_func(e.start)
-            if ((self.prediction_codes is None) or (e.code in self.prediction_codes)) and (
-                last_time != prediction_time
-            ):
+            prediction_time: datetime.datetime = self.prediction_time_adjustment_func(
+                e.start
+            )
+            if (
+                (self.prediction_codes is None) or (e.code in self.prediction_codes)
+            ) and (last_time != prediction_time):
                 times.append(prediction_time)
                 last_time = prediction_time
         return times
@@ -627,6 +737,7 @@ class CodeLabeler_TTE(TimeHorizonEventLabeler_TTE):
         # We cannot allow labels at the same time as the codes since they will generally be available as features ...
         return False
 
+
 class PredefinedEventTimeCSVLabeler(CodeLabeler_TTE):
     """Apply a label for predefined times in a given CSV within the `time_horizon`.
     Make prediction at admission time.
@@ -665,7 +776,9 @@ class SourceCodeLabeler(femr.labelers.TimeHorizonEventLabeler):
         self.prediction_times_map = collections.defaultdict(set)
 
         for _, row in index_time_df.iterrows():
-            prediction_time: datetime.datetime = datetime.datetime.strptime(row[index_time_column], "%Y-%m-%d %H:%M:%S")
+            prediction_time: datetime.datetime = datetime.datetime.strptime(
+                row[index_time_column], "%Y-%m-%d %H:%M:%S"
+            )
             self.prediction_times_map[row["PersonID"]].add(prediction_time)
 
         super().__init__()
@@ -701,7 +814,9 @@ class SourceCodeLabeler_TTE(TimeHorizonEventLabeler_TTE):
         self.prediction_times_map = collections.defaultdict(set)
 
         for _, row in index_time_df.iterrows():
-            prediction_time: datetime.datetime = datetime.datetime.strptime(row[index_time_column], "%Y-%m-%d %H:%M:%S")
+            prediction_time: datetime.datetime = datetime.datetime.strptime(
+                row[index_time_column], "%Y-%m-%d %H:%M:%S"
+            )
             self.prediction_times_map[row["person_id"]].add(prediction_time)
 
         super().__init__()
@@ -734,7 +849,9 @@ class ModifiedReadmission(InpatientReadmissionLabeler):
         self.prediction_times_map = collections.defaultdict(set)
 
         for _, row in index_time_df.iterrows():
-            prediction_time: datetime.datetime = datetime.datetime.strptime(row[index_time_column], "%Y-%m-%d %H:%M:%S")
+            prediction_time: datetime.datetime = datetime.datetime.strptime(
+                row[index_time_column], "%Y-%m-%d %H:%M:%S"
+            )
             self.prediction_times_map[row["person_id"]].add(prediction_time)
 
         super().__init__(ontology, time_horizon)
@@ -744,6 +861,7 @@ class ModifiedReadmission(InpatientReadmissionLabeler):
 
     def allow_same_time_labels(self):
         return False
+
 
 class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
     """
@@ -773,7 +891,9 @@ class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
     ):
         self.ontology: extension_datasets.Ontology = ontology
         self.time_horizon: TimeHorizon = time_horizon
-        self.prediction_time_adjustment_func = prediction_time_adjustment_func  # prediction_time_adjustment_func
+        self.prediction_time_adjustment_func = (
+            prediction_time_adjustment_func  # prediction_time_adjustment_func
+        )
         self.index_time_csv_path = index_time_csv_path
         self.index_time_column = index_time_column
         self.index_time_df = index_time_df
@@ -782,7 +902,9 @@ class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
     def get_outcome_times(self, patient: Patient) -> List[datetime.datetime]:
         """Return the start times of inpatient admissions."""
         times: List[datetime.datetime] = []
-        for admission_time, __ in get_inpatient_admission_discharge_times(patient, self.ontology):
+        for admission_time, __ in get_inpatient_admission_discharge_times(
+            patient, self.ontology
+        ):
             times.append(admission_time)
         return times
 
@@ -791,8 +913,12 @@ class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
         times: List[datetime.datetime] = []
         prev_discharge_date: datetime.date = datetime.date(1900, 1, 1)
 
-        for admission_time, discharge_time in get_inpatient_admission_discharge_times(patient, self.ontology):
-            prediction_time: datetime.datetime = self.prediction_time_adjustment_func(discharge_time)
+        for admission_time, discharge_time in get_inpatient_admission_discharge_times(
+            patient, self.ontology
+        ):
+            prediction_time: datetime.datetime = self.prediction_time_adjustment_func(
+                discharge_time
+            )
 
             # Ignore patients who are readmitted the same day they were discharged b/c of data leakage
             if admission_time.date() <= prev_discharge_date:
@@ -803,7 +929,9 @@ class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
         times = sorted(list(set(times)))
         return times
 
-    def get_prediction_times_from_csv(self, patient: Patient) -> List[datetime.datetime]:
+    def get_prediction_times_from_csv(
+        self, patient: Patient
+    ) -> List[datetime.datetime]:
         """Return prediction times based on a given CSV."""
         times: List[datetime.datetime] = []
         last_time = None
@@ -825,12 +953,15 @@ class InpatientReadmissionLabeler_TTE(TimeHorizonEventLabeler_TTE):
     def get_time_horizon(self) -> TimeHorizon:
         return self.time_horizon
 
+
 class ModifiedReadmission_TTE(InpatientReadmissionLabeler_TTE):
     def __init__(self, index_time_df, index_time_column, time_horizon, ontology):
         self.prediction_times_map = collections.defaultdict(set)
 
         for _, row in index_time_df.iterrows():
-            prediction_time: datetime.datetime = datetime.datetime.strptime(row[index_time_column], "%Y-%m-%d %H:%M:%S")
+            prediction_time: datetime.datetime = datetime.datetime.strptime(
+                row[index_time_column], "%Y-%m-%d %H:%M:%S"
+            )
             self.prediction_times_map[row["person_id"]].add(prediction_time)
 
         super().__init__(ontology, time_horizon)
@@ -846,7 +977,9 @@ def stripoff_subminute(dt: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute)
 
 
-def save_labeled_patients_to_csv(labeled_patients: LabeledPatients, path_to_csv: str) -> pd.DataFrame:
+def save_labeled_patients_to_csv(
+    labeled_patients: LabeledPatients, path_to_csv: str
+) -> pd.DataFrame:
     """Converts a LabeledPatient object -> pd.DataFrame and saves as CSV to `path_to_csv`"""
     rows = []
     for patient, labels in labeled_patients.items():
@@ -871,8 +1004,15 @@ def save_labeled_patients_to_csv(labeled_patients: LabeledPatients, path_to_csv:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run femr featurization")
-    parser.add_argument("--path_to_database", required=True, type=str, help="Path to femr database")
-    parser.add_argument("--path_to_output_dir", required=True, type=str, help="Path to save labeles and featurizers")
+    parser.add_argument(
+        "--path_to_database", required=True, type=str, help="Path to femr database"
+    )
+    parser.add_argument(
+        "--path_to_output_dir",
+        required=True,
+        type=str,
+        help="Path to save labeles and featurizers",
+    )
     parser.add_argument(
         "--labeling_function",
         required=True,
@@ -897,8 +1037,18 @@ if __name__ == "__main__":
         help="Path to chexpert labeled csv file. Specific to chexpert labeler",
         default=None,
     )
-    parser.add_argument("--is_skip_label", action="store_true", help="If specified, skip labeling step", default=False)
-    parser.add_argument("--is_skip_featurize", action="store_true", help="If specified, skip featurize step", default=False)
+    parser.add_argument(
+        "--is_skip_label",
+        action="store_true",
+        help="If specified, skip labeling step",
+        default=False,
+    )
+    parser.add_argument(
+        "--is_skip_featurize",
+        action="store_true",
+        help="If specified, skip featurize step",
+        default=False,
+    )
     parser.add_argument(
         "--index_time_csv_path",
         type=str,
@@ -971,10 +1121,18 @@ if __name__ == "__main__":
         json.dump(vars(args), f, indent=4)
 
     # create directories to save files
-    PATH_TO_SAVE_ID_LABELED_PATIENTS: str = os.path.join(PATH_TO_OUTPUT_DIR, "labeled_patients_identified.csv")
-    PATH_TO_SAVE_LABELED_PATIENTS: str = os.path.join(PATH_TO_OUTPUT_DIR, "labeled_patients.csv")
-    PATH_TO_SAVE_PREPROCESSED_FEATURIZERS: str = os.path.join(PATH_TO_OUTPUT_DIR, "preprocessed_featurizers.pkl")
-    PATH_TO_SAVE_FEATURIZED_PATIENTS: str = os.path.join(PATH_TO_OUTPUT_DIR, "featurized_patients.pkl")
+    PATH_TO_SAVE_ID_LABELED_PATIENTS: str = os.path.join(
+        PATH_TO_OUTPUT_DIR, "labeled_patients_identified.csv"
+    )
+    PATH_TO_SAVE_LABELED_PATIENTS: str = os.path.join(
+        PATH_TO_OUTPUT_DIR, "labeled_patients.csv"
+    )
+    PATH_TO_SAVE_PREPROCESSED_FEATURIZERS: str = os.path.join(
+        PATH_TO_OUTPUT_DIR, "preprocessed_featurizers.pkl"
+    )
+    PATH_TO_SAVE_FEATURIZED_PATIENTS: str = os.path.join(
+        PATH_TO_OUTPUT_DIR, "featurized_patients.pkl"
+    )
     os.makedirs(PATH_TO_OUTPUT_DIR, exist_ok=True)
 
     # Load PatientDatabase + Ontology
@@ -999,7 +1157,9 @@ if __name__ == "__main__":
 
     mortality_codes = list(
         femr.labelers.omop.map_omop_concept_codes_to_femr_codes(
-            id_ontology, femr.labelers.omop.get_death_concepts(), is_ontology_expansion=True
+            id_ontology,
+            femr.labelers.omop.get_death_concepts(),
+            is_ontology_expansion=True,
         )
     )
     precise_ph_codes = list(
@@ -1101,7 +1261,9 @@ if __name__ == "__main__":
         labeler = SourceCodeLabeler(
             index_time_df,
             args.index_time_column,
-            femr.labelers.TimeHorizon(datetime.timedelta(days=1), datetime.timedelta(days=365)),
+            femr.labelers.TimeHorizon(
+                datetime.timedelta(days=1), datetime.timedelta(days=365)
+            ),
             PH_codes,
             id_database.get_ontology(),
         )
@@ -1167,7 +1329,8 @@ if __name__ == "__main__":
         for _, row in index_time_df.iterrows():
             labels[row["PersonID"]].append(
                 femr.labelers.Label(
-                    time=pd.to_datetime(row["ProcedureDatetime"]).to_pydatetime() - datetime.timedelta(days=1),
+                    time=pd.to_datetime(row["ProcedureDatetime"]).to_pydatetime()
+                    - datetime.timedelta(days=1),
                     value=row["pe_positive_nlp"],
                 )
             )
@@ -1183,7 +1346,8 @@ if __name__ == "__main__":
             label_value = True if row["Cardiomegaly"] == 1 else False
             labels[row["person_id"]].append(
                 femr.labelers.Label(
-                    time=pd.to_datetime(row["StudyDate"]).to_pydatetime() - datetime.timedelta(days=1),
+                    time=pd.to_datetime(row["StudyDate"]).to_pydatetime()
+                    - datetime.timedelta(days=1),
                     value=label_value,
                 )
             )
@@ -1204,7 +1368,9 @@ if __name__ == "__main__":
         )
 
     elif args.labeling_function == "chexpert":
-        assert args.path_to_chexpert_csv is not None, f"path_to_chexpert_csv cannot be {args.path_to_chexpert_csv}"
+        assert (
+            args.path_to_chexpert_csv is not None
+        ), f"path_to_chexpert_csv cannot be {args.path_to_chexpert_csv}"
         labeler = ChexpertLabeler(args.path_to_chexpert_csv)
     else:
         raise ValueError(
@@ -1212,11 +1378,19 @@ if __name__ == "__main__":
         )
 
     # Determine how many labels to keep per patient
-    if labeler is not None and args.max_labels_per_patient is not None and args.labeling_function != "chexpert":
-        labeler = NLabelsPerPatientLabeler(labeler, seed=0, num_labels=MAX_LABELS_PER_PATIENT)
+    if (
+        labeler is not None
+        and args.max_labels_per_patient is not None
+        and args.labeling_function != "chexpert"
+    ):
+        labeler = NLabelsPerPatientLabeler(
+            labeler, seed=0, num_labels=MAX_LABELS_PER_PATIENT
+        )
 
     if args.is_skip_label:
-        logger.critical(f"Skipping labeling step. Loading labeled patients from @ {PATH_TO_SAVE_LABELED_PATIENTS}")
+        logger.critical(
+            f"Skipping labeling step. Loading labeled patients from @ {PATH_TO_SAVE_LABELED_PATIENTS}"
+        )
         labeled_patients = pickle.load(open(PATH_TO_SAVE_LABELED_PATIENTS, "rb"))
     else:
         logger.info(f"Start | Label {len(patient_ids)} patients")
@@ -1244,10 +1418,14 @@ if __name__ == "__main__":
                 deid_pid = AnonMapping[id_pid]
             else:
                 deid_pid = id_pid
-            offset = database.get_patient_birth_date(deid_pid) - id_database.get_patient_birth_date(id_pid)
+            offset = database.get_patient_birth_date(
+                deid_pid
+            ) - id_database.get_patient_birth_date(id_pid)
             deid_labels = []
             for id_label in id_labels:
-                deid_label = femr.labelers.Label(time=id_label.time + offset, value=id_label.value)
+                deid_label = femr.labelers.Label(
+                    time=id_label.time + offset, value=id_label.value
+                )
                 deid_labels.append(deid_label)
             shifted_label_map[deid_pid] = deid_labels
 
@@ -1265,12 +1443,16 @@ if __name__ == "__main__":
 
         # Preprocessing the featurizers, which includes processes such as normalizing age.
         logger.info("Start | Preprocess featurizers")
-        featurizer_age_count.preprocess_featurizers(PATH_TO_PATIENT_DATABASE, labeled_patients, NUM_THREADS)
+        featurizer_age_count.preprocess_featurizers(
+            PATH_TO_PATIENT_DATABASE, labeled_patients, NUM_THREADS
+        )
         save_data(featurizer_age_count, PATH_TO_SAVE_PREPROCESSED_FEATURIZERS)
         logger.info("Finish | Preprocess featurizers")
 
         logger.info("Start | Featurize patients")
-        results = featurizer_age_count.featurize(PATH_TO_PATIENT_DATABASE, labeled_patients, NUM_THREADS)
+        results = featurizer_age_count.featurize(
+            PATH_TO_PATIENT_DATABASE, labeled_patients, NUM_THREADS
+        )
         save_data(results, PATH_TO_SAVE_FEATURIZED_PATIENTS)
         logger.info("Finish | Featurize patients")
         feature_matrix, patient_ids, label_values, label_times = (

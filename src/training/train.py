@@ -1,4 +1,5 @@
 from datetime import datetime
+
 START_TIME = datetime.now()
 
 print("Start Time: ", START_TIME)
@@ -54,7 +55,7 @@ from utils import (
     DicomDataset,
     TarImageDataset,
     CustomToOneChannel,
-    CustomToOneChanneld
+    CustomToOneChanneld,
 )
 
 # wandb.init(project="TTE", entity="stanford_som")
@@ -62,7 +63,7 @@ from utils import (
 pin_memory = torch.cuda.is_available()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # print(device)
-print('available gpus: ', torch.cuda.device_count())
+print("available gpus: ", torch.cuda.device_count())
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 print_config()
@@ -76,14 +77,15 @@ time_used = datetime.now() - START_TIME
 print(time_used)
 
 
-
 def setup(rank, world_size):
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '12355'
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "12355"
     dist.init_process_group("nccl", rank=rank, world_size=world_size)
-    
+
+
 def cleanup():
     dist.destroy_process_group()
+
 
 def train(
     dataformat,
@@ -101,35 +103,56 @@ def train(
     nii_folder,
     use_cachedataset,
 ):
-    
-    
+
     # Define transforms
     if use_cachedataset:
         train_transforms = Compose(
-            [LoadImaged(keys=["image"]), ScaleIntensityd(keys=["image"]), EnsureChannelFirstd(keys=["image"]), Resized(keys=["image"], spatial_size=(224, 224, 224)), 
-            RandRotate90d(keys=["image"]), 
-            CustomToOneChanneld(keys=["image"])]
+            [
+                LoadImaged(keys=["image"]),
+                ScaleIntensityd(keys=["image"]),
+                EnsureChannelFirstd(keys=["image"]),
+                Resized(keys=["image"], spatial_size=(224, 224, 224)),
+                RandRotate90d(keys=["image"]),
+                CustomToOneChanneld(keys=["image"]),
+            ]
         )
         val_transforms = Compose(
-            [LoadImaged(keys=["image"]), ScaleIntensityd(keys=["image"]), EnsureChannelFirstd(keys=["image"]), Resized(keys=["image"], spatial_size=(224, 224, 224)), CustomToOneChanneld(keys=["image"])]
+            [
+                LoadImaged(keys=["image"]),
+                ScaleIntensityd(keys=["image"]),
+                EnsureChannelFirstd(keys=["image"]),
+                Resized(keys=["image"], spatial_size=(224, 224, 224)),
+                CustomToOneChanneld(keys=["image"]),
+            ]
         )
-        
-    else:    
+
+    else:
         train_transforms = Compose(
-            [ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 224)), RandRotate90(), CustomToOneChannel()]
+            [
+                ScaleIntensity(),
+                EnsureChannelFirst(),
+                Resize((224, 224, 224)),
+                RandRotate90(),
+                CustomToOneChannel(),
+            ]
         )
 
         val_transforms = Compose(
-            [ScaleIntensity(), EnsureChannelFirst(), Resize((224, 224, 224)), CustomToOneChannel()]
+            [
+                ScaleIntensity(),
+                EnsureChannelFirst(),
+                Resize((224, 224, 224)),
+                CustomToOneChannel(),
+            ]
         )
     # rank = int(os.environ['RANK'])
     # world_size = int(os.environ['WORLD_SIZE'])
     # setup(rank, world_size)
     # device = torch.device(f'cuda:{rank}')
-    
+
     # Define nifti dataset, data loader
-    if False: 
-    # dataformat == "nifti":
+    if False:
+        # dataformat == "nifti":
         check_ds = ImageDataset(
             image_files=images, labels=labels, transform=train_transforms
         )
@@ -164,9 +187,9 @@ def train(
         # label column unique values, top as 1, second top as 0
         label_dict = label_df[label_column].value_counts().to_dict()
         keys = list(label_dict.keys())
-        if 'True' in keys and 'False' in keys:
-            pos_key = 'True'
-            neg_key = 'False'
+        if "True" in keys and "False" in keys:
+            pos_key = "True"
+            neg_key = "False"
         else:
             pos_key = keys[0]
             neg_key = keys[1]
@@ -187,14 +210,14 @@ def train(
         train_idx = label_df["split"] == "train"
 
         labels_train = np.array(labels)[train_idx]
-        print(np.unique(labels_train, return_counts=True), 'labels_train')
+        print(np.unique(labels_train, return_counts=True), "labels_train")
         image_paths_train = np.array(image_paths)[train_idx]
 
         if prop_train:
             image_paths_train = image_paths_train[:prop_train]
-        
+
         # full val set
-        label_csv_full = label_csv.replace('_subset', '')
+        label_csv_full = label_csv.replace("_subset", "")
         label_df_full = pd.read_csv(label_csv_full)
         labels = []
         image_paths = []
@@ -210,36 +233,36 @@ def train(
             )
         val_idx = label_df_full["split"] == "valid"
         labels_valid = np.array(labels)[val_idx]
-        print(np.unique(labels_valid, return_counts=True), 'labels_valid')
+        print(np.unique(labels_valid, return_counts=True), "labels_valid")
         image_paths_valid = np.array(image_paths)[val_idx]
-        
+
         if prop_val:
             image_paths_valid = image_paths_valid[:prop_val]
 
         # create a training data loader
-        
+
         if use_cachedataset:
             data_train = []
             for i in range(len(image_paths_train)):
-                one_entry = {'image': image_paths_train[i], 'label': labels_train[i]}
+                one_entry = {"image": image_paths_train[i], "label": labels_train[i]}
                 data_train.append(one_entry)
             data_val = []
             for i in range(len(image_paths_valid)):
-                one_entry = {'image': image_paths_valid[i], 'label': labels_valid[i]}
+                one_entry = {"image": image_paths_valid[i], "label": labels_valid[i]}
                 data_val.append(one_entry)
             train_ds = PersistentDataset(
                 data=data_train,
                 transform=train_transforms,
-                #cache_num=9223,
-                cache_dir=os.path.join(model_save_path, 'cache_dir'),
+                # cache_num=9223,
+                cache_dir=os.path.join(model_save_path, "cache_dir"),
             )
             val_ds = PersistentDataset(
                 data=data_val,
                 transform=val_transforms,
-                #cache_num=9223,
-                cache_dir=os.path.join(model_save_path, 'cache_dir'),
-            ) 
-                
+                # cache_num=9223,
+                cache_dir=os.path.join(model_save_path, "cache_dir"),
+            )
+
         else:
             train_ds = ImageDataset(
                 image_files=image_paths_train,
@@ -254,18 +277,21 @@ def train(
                 labels=labels_valid,
                 transform=val_transforms,
             )
-            
-            
+
         train_loader = DataLoader(
-                train_ds, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=pin_memory,
-                # sampler = train_sampler,
-            )
+            train_ds,
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=2,
+            pin_memory=pin_memory,
+            # sampler = train_sampler,
+        )
         val_loader = DataLoader(
-                val_ds, batch_size=batch_size, num_workers=4, pin_memory=pin_memory
-            )
+            val_ds, batch_size=batch_size, num_workers=4, pin_memory=pin_memory
+        )
 
     elif False:
-    # dataformat == "dicom":
+        # dataformat == "dicom":
         tar_folder = "anon_dicoms_tar"
 
         label_df = pd.read_csv(label_csv)
@@ -317,7 +343,7 @@ def train(
         val_loader = DataLoader(
             val_ds, batch_size=1, num_workers=2, pin_memory=pin_memory
         )
-        
+
     if model_choice == "unet":
         # Define your SwinUNETR parameters in a dictionary
         swin_unetr_params = {
@@ -336,7 +362,7 @@ def train(
             swin_unetr_params,
             num_classes=2,  # Specify the number of classes for classification
         ).to(device)
-            
+
         if loadmodel_path:
             state_dict = torch.load(loadmodel_path)
             model.load_state_dict(state_dict)
@@ -345,21 +371,20 @@ def train(
             model = load_pretrained_swinunetr(
                 model, use_pretrained=True, pretrained_path=pretrained_path
             )
-            
+
         if linear_probe:
             print("Linear probe for SwinUNETR...")
             # Freeze all layers in the model
             for name, param in model.named_parameters():
                 if "out" not in name:
                     param.requires_grad = False
-                    
+
         # ddp_model = DDP(model, device_ids=[rank])
-        
-        
+
     if model_choice == "unet_louis":
         # Define your SwinUNETR parameters in a dictionary
         swin_unetr_params = {
-            #"img_size": (224, 224, 224),
+            # "img_size": (224, 224, 224),
             "in_channels": 1,
             "out_channels": 2,  # Used for segmentation, but will be adapted
             "feature_size": 48,
@@ -373,7 +398,7 @@ def train(
             # Initialize the SwinUNETRForClassification model
             model = SwinClassifier(
                 **swin_unetr_params,
-                #num_classes=2,  # Specify the number of classes for classification
+                # num_classes=2,  # Specify the number of classes for classification
             ).to(device)
             state_dict = torch.load(loadmodel_path)
             model.load_state_dict(state_dict)
@@ -382,25 +407,21 @@ def train(
             # model = load_pretrained_swinunetr(
             #     model, use_pretrained=True, pretrained_path=pretrained_path
             # )
-            model = SwinClassifier(
-                **swin_unetr_params,
-                pretrained_path=pretrained_path
-            )
-            
+            model = SwinClassifier(**swin_unetr_params, pretrained_path=pretrained_path)
+
         if linear_probe:
             print("Linear probe for SwinUNETR...")
             # Freeze all layers in the model
             for name, param in model.named_parameters():
                 if "out" not in name:
                     param.requires_grad = False
-                    
-        
+
     elif model_choice == "densenet":
         model = DenseNet121(spatial_dims=3, in_channels=1, out_channels=2).to(device)
         if loadmodel_path:
             state_dict = torch.load(loadmodel_path)
             model.load_state_dict(state_dict)
-          
+
         if linear_probe:
             print("Linear probe for densenet...")
             # Freeze all layers in the model
@@ -435,9 +456,11 @@ def train(
 
         for batch_data in tqdm(train_loader):
             step += 1
-            
+
             if use_cachedataset:
-                inputs, labels = batch_data['image'].to(device), batch_data['label'].to(device)
+                inputs, labels = batch_data["image"].to(device), batch_data["label"].to(
+                    device
+                )
             else:
                 inputs, labels = batch_data[0].to(device), batch_data[1].to(device)
             optimizer.zero_grad()
@@ -465,9 +488,13 @@ def train(
             labels = []
             for val_data in tqdm(val_loader):
                 if use_cachedataset:
-                    val_images, val_labels = val_data['image'].to(device), val_data['label'].to(device)
+                    val_images, val_labels = val_data["image"].to(device), val_data[
+                        "label"
+                    ].to(device)
                 else:
-                    val_images, val_labels = val_data[0].to(device), val_data[1].to(device)
+                    val_images, val_labels = val_data[0].to(device), val_data[1].to(
+                        device
+                    )
 
                 with torch.no_grad():
                     val_outputs = model(val_images)
@@ -475,8 +502,8 @@ def train(
                     value = torch.eq(val_outputs.argmax(dim=1), val_labels)
                     metric_count += len(value)
                     num_correct += value.sum().item()
-                    #proba.extend(val_outputs.argmax(dim=1).cpu())
-                    proba.extend(val_outputs[:,1].cpu())
+                    # proba.extend(val_outputs.argmax(dim=1).cpu())
+                    proba.extend(val_outputs[:, 1].cpu())
                     labels.extend(val_labels.cpu())
 
             # metric = num_correct / metric_count
@@ -486,9 +513,13 @@ def train(
             if metric > best_metric:
                 best_metric = metric
                 best_metric_epoch = epoch + 1
-                
+
                 torch.save(
-                    model.state_dict(), os.path.join(model_save_path, f"best_metric_model_{epoch}epoch_{model_choice}{'_lb' if linear_probe else ''}.pth")
+                    model.state_dict(),
+                    os.path.join(
+                        model_save_path,
+                        f"best_metric_model_{epoch}epoch_{model_choice}{'_lb' if linear_probe else ''}.pth",
+                    ),
                 )
 
             print(f"Current epoch: {epoch+1} current accuracy: {metric:.4f} ")
@@ -496,7 +527,7 @@ def train(
             writer.add_scalar("val_accuracy", metric, epoch + 1)
 
     # save model
-    
+
     print(
         f"Training completed, best_metric: {best_metric:.4f} at epoch: {best_metric_epoch}"
     )
@@ -570,7 +601,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--linear_probe",
-        action='store_true',
+        action="store_true",
         help="If specified, only train the last layer of the model.",
         default=False,
     )
@@ -588,7 +619,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--use_cachedataset",
-        action='store_true',
+        action="store_true",
         help="If specified, use cached dataset",
         default=False,
     )

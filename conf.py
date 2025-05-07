@@ -6,9 +6,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u"pe"
-copyright = u"2023, Zepeng Frazier Huo"
-author = u"Zepeng Frazier Huo"
+project = "pe"
+copyright = "2023, Zepeng Frazier Huo"
+author = "Zepeng Frazier Huo"
 
 # -- General configuration ---------------------------------------------------
 
