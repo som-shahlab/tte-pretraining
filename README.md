@@ -64,7 +64,7 @@ Athena is an OHDSI service for downloading ontologies. Simply visit https://athe
 Note: the downloaded ontology can be too large (i.e. few hundred GB) so optionally you want to prune it to fit to our dataset to make running substantially faster:
 
 ```bash
-cd tte-pretraining/src/tte_pretraining/training
+cd src/training
 python 1a_prune_ontology.py \
 --input-dataset "inspect/timelines_smallfiles_meds/data/*parquet" \
 --input-ontology "inspect/ontology.pkl" \
@@ -98,7 +98,7 @@ Note that our EHR data is under [OHDSI common data model](https://www.ohdsi.org/
 You can then proceed to start deriving the TTE labels
 
 ```bash
-cd tte-pretraining/src/tte_pretraining/labeling
+cd src/labeling
 labeling_functions='tte_mortality' # or 'tte_Pleural_Effusion' etc.
 
 python generate_tte_labels.py \
@@ -117,8 +117,8 @@ python generate_tte_labels.py \
 For pretraining we used 3 model architectures (SWINUNETR/ResNet/DenseNet)
 - SWINUNETR's pretrianing weights is from training on 50k public available CT/MRI dataset (weights can be download from [here to load in torch](https://github.com/Project-MONAI/MONAI-extra-test-data/releases/download/0.8.1/model_swinvit.pt))
 - ResNet and DenseNet are initialized from inflating 2D weights of pretrained data of ImageNet. The inflation process can be followed by [this instructions](https://github.com/hassony2/inflated_convnets_pytorch)
-    - The script to conduct the operations are `tte-pretraining/src/tte_pretraining/training/src/i3dense.py`
-    - And `tte-pretraining/src/tte_pretraining/training/src/i3res.py`
+    - The script to conduct the operations are `src/training/src/i3dense.py`
+    - And `src/training/src/i3res.py`
 
 ![Pretraining overview](assets/pretrain.png)
 
@@ -127,8 +127,8 @@ You can should specify the pretrained tokenizer from above and the dataset path 
 There are other hyperparameter training for the three architecture, you should refer to the [hyperparameter table](https://arxiv.org/pdf/2411.09361#page=21.10) for detailed reference when you input them into the bash script
 
 ```bash
-cd ttte-pretraining/src/tte_pretraining/training/
-./1_pretrain_TTE_H100run_ddp.sh
+cd src/training
+./1_pretrain_TTE_run_ddp.sh
 ```
 
 Each of the architecture would require different training clocktime (or GPU time) with rough estimate.
@@ -143,8 +143,8 @@ Each of the architecture would require different training clocktime (or GPU time
 Note: optionally you can perform per task fine-tuning but this process is generally expensive given you need to train to completion for any downstream, i.e. `num_model * num_tasks` for full paremeter update and this tends not work well (per our [fine-tuning table results](https://arxiv.org/pdf/2411.09361#page=23.10)) but we also provide you script to to do fine-tuning as example
 
 ```bash
-cd tte-pretraining/src/tte_pretraining/training/
-./2_finetune_A100run_ddp.sh
+cd src/training/
+./2_finetune_run_ddp.sh
 ```
 
 
@@ -155,14 +155,14 @@ After pretraining is done we will perform linear probe (logistic regressin on bi
 ![Task Adaptation](assets/linear_probe.png)
 
 ```bash
-cd tte-pretraining/src/tte_pretraining/training
-./3_inference_TTE_H100_ddp.sh
+cd src/training
+./3_inference_TTE_ddp.sh
 ```
 
 We also test on the [RSPECT data](https://www.kaggle.com/c/rsna-str-pulmonary-embolism-detection/data) for the out-of-distribution diagnosis task only evaluation
 
 ```bash
-cd tte-pretraining/src/tte_pretraining/training
+cd src/training
 ./3_inference_TTE_RSNA.sh
 ```
 
@@ -185,7 +185,7 @@ Note:
 
 We also provide unit test for our model loading, deriving featuring, etc. as preliminary guardrails
 
-Please refer to folder at `tte-pretraining/tests`
+Please refer to folder at `tests/`
 
 Note: 
 - we mainly provide guardrails for out-of-the-box inference and adaptation
